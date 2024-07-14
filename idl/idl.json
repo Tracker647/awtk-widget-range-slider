@@ -1,0 +1,209 @@
+[
+  {
+    "params": [],
+    "annotation": {
+      "global": true
+    },
+    "desc": "注册控件。",
+    "name": "range_slider_register",
+    "return": {
+      "type": "ret_t",
+      "desc": "返回RET_OK表示成功，否则表示失败。"
+    },
+    "type": "method",
+    "header": "src/range_slider_register.h",
+    "level": 1
+  },
+  {
+    "params": [],
+    "annotation": {
+      "global": true
+    },
+    "desc": "获取支持的渲染模式。",
+    "name": "range_slider_supported_render_mode",
+    "return": {
+      "type": "const char*",
+      "desc": "返回渲染模式。"
+    },
+    "type": "method",
+    "header": "src/range_slider_register.h",
+    "level": 1
+  },
+  {
+    "type": "class",
+    "methods": [
+      {
+        "params": [
+          {
+            "type": "widget_t*",
+            "name": "parent",
+            "desc": "父控件"
+          },
+          {
+            "type": "xy_t",
+            "name": "x",
+            "desc": "x坐标"
+          },
+          {
+            "type": "xy_t",
+            "name": "y",
+            "desc": "y坐标"
+          },
+          {
+            "type": "wh_t",
+            "name": "w",
+            "desc": "宽度"
+          },
+          {
+            "type": "wh_t",
+            "name": "h",
+            "desc": "高度"
+          }
+        ],
+        "annotation": {
+          "constructor": true,
+          "scriptable": true
+        },
+        "desc": "创建range_slider对象",
+        "name": "range_slider_create",
+        "return": {
+          "type": "widget_t*",
+          "desc": "range_slider对象。"
+        }
+      },
+      {
+        "params": [
+          {
+            "type": "widget_t*",
+            "name": "widget",
+            "desc": "range_slider对象。"
+          }
+        ],
+        "annotation": {
+          "cast": true,
+          "scriptable": true
+        },
+        "desc": "转换为range_slider对象(供脚本语言使用)。",
+        "name": "range_slider_cast",
+        "return": {
+          "type": "widget_t*",
+          "desc": "range_slider对象。"
+        }
+      },
+      {
+        "params": [],
+        "annotation": {},
+        "desc": "获取 range_slider 虚表。",
+        "name": "range_slider_get_widget_vtable",
+        "return": {
+          "type": "const widget_vtable_t*",
+          "desc": "成功返回 range_slider 虚表。"
+        }
+      }
+    ],
+    "events": [],
+    "properties": [
+      {
+        "name": "value1",
+        "desc": "值1，最左为起点。",
+        "type": "double",
+        "annotation": {
+          "set_prop": true,
+          "get_prop": true,
+          "readable": true,
+          "persitent": true,
+          "design": true,
+          "scriptable": true
+        }
+      },
+      {
+        "name": "value2",
+        "desc": "值2, 最右为起点。",
+        "type": "double",
+        "annotation": {
+          "set_prop": true,
+          "get_prop": true,
+          "readable": true,
+          "persitent": true,
+          "design": true,
+          "scriptable": true
+        }
+      },
+      {
+        "name": "min",
+        "desc": "最小值。",
+        "type": "double",
+        "annotation": {
+          "set_prop": true,
+          "get_prop": true,
+          "readable": true,
+          "persitent": true,
+          "design": true,
+          "scriptable": true
+        }
+      },
+      {
+        "name": "max",
+        "desc": "最大值。",
+        "type": "double",
+        "annotation": {
+          "set_prop": true,
+          "get_prop": true,
+          "readable": true,
+          "persitent": true,
+          "design": true,
+          "scriptable": true
+        }
+      },
+      {
+        "name": "step",
+        "desc": "拖动的最小单位。",
+        "type": "double",
+        "annotation": {
+          "set_prop": true,
+          "get_prop": true,
+          "readable": true,
+          "persitent": true,
+          "design": true,
+          "scriptable": true
+        }
+      },
+      {
+        "name": "bar_size",
+        "desc": "轴的宽度或高度（单位：像素），为0表示为控件的宽度或高度的一半，缺省为0。",
+        "type": "uint32_t",
+        "annotation": {
+          "set_prop": true,
+          "get_prop": true,
+          "readable": true,
+          "persitent": true,
+          "design": true,
+          "scriptable": true
+        }
+      },
+      {
+        "name": "dragger_size",
+        "desc": "滑块的宽度或高度（单位：像素），缺省为 bar_size * 1.5。",
+        "type": "uint32_t",
+        "annotation": {
+          "set_prop": true,
+          "get_prop": true,
+          "readable": true,
+          "persitent": true,
+          "design": true,
+          "scriptable": true
+        }
+      }
+    ],
+    "header": "range_slider/range_slider.h",
+    "desc": "在xml中使用\"range\\_slider\"标签创建控件。如：\n\n```xml\n<!-- ui -->\n<range_slider name=\"range_slider1\" value1=\"25\" value2=\"75\" min=\"1\" max=\"100\" w=\"268\" h=\"28\" dragger_size=\"10\" bar_size=\"10\"/>\n```\n\n可用通过style来设置控件的显示风格，如字体的大小和颜色等等。如：\n\n```xml\n<!-- style -->\n<range_slider>\n<style name=\"default\">\n<normal bg_color=\"#A5A5A5\" border_color=\"#E7E6E6\" fg_color=\"#338FFF\" font_size=\"32\" selected_bg_color=\"#A5A5A5\" selected_fg_color=\"#00B0F0\" text_color=\"#000000\"/>\n</style>\n</range_slider>\n```",
+    "name": "range_slider_t",
+    "parent": "widget_t",
+    "annotation": {
+      "scriptable": true,
+      "design": true,
+      "widget": true
+    },
+    "level": 2
+  }
+]

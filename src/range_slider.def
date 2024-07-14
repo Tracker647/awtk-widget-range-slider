@@ -1,0 +1,7 @@
+LIBRARY   range_slider
+EXPORTS
+    range_slider_register
+    range_slider_supported_render_mode
+    range_slider_create
+    range_slider_cast
+    range_slider_get_widget_vtable

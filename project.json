@@ -1,0 +1,52 @@
+{
+  "name": "range_slider",
+  "version": "0.0.0",
+  "date": "2024-7-4",
+  "team": "",
+  "author": "",
+  "desc": "",
+  "copyright": "",
+  "type": "PROJECT_CUSTOM_WIDGET",
+  "entry": "main",
+  "assets": {
+    "activedTheme": "default",
+    "outputDir": "res",
+    "loadFrom": "any",
+    "const": "resource_data",
+    "screenDPR": "x1",
+    "defaultLanguage": "zh",
+    "defaultCountry": "CN",
+    "themes": {
+      "default": {
+        "activedSystemBar": "system_bar",
+        "activedBottomSystemBar": "system_bar_b",
+        "packaged": true,
+        "fonts": {
+          "default": {
+            "text": " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~，。？！确定取消"
+          }
+        },
+        "lcd": {
+          "width": "800",
+          "height": "480",
+          "colorDepth": "16bit",
+          "colorFormat": "BGR(A)"
+        }
+      }
+    },
+    "lcdOrientation": "0",
+    "lcdFastRotationMode": false
+  },
+  "creator": {
+    "name": "AWTK Designer",
+    "version": "2.2.2"
+  },
+  "awtkRoot": "${AWTK_SDK_PATH}/awtk",
+  "awtkMvvmRoot": "${AWTK_SDK_PATH}/awtk-mvvm",
+  "appTitle": "",
+  "appExeName": "demo",
+  "appType": "APP_SIMULATOR",
+  "dependencies": {
+    "awtk": ">=2210"
+  }
+}
