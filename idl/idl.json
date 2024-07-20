@@ -196,7 +196,7 @@
       }
     ],
     "header": "range_slider/range_slider.h",
-    "desc": "在xml中使用\"range\\_slider\"标签创建控件。如：\n\n```xml\n<!-- ui -->\n<range_slider name=\"range_slider1\" value1=\"25\" value2=\"75\" min=\"1\" max=\"100\" w=\"268\" h=\"28\" dragger_size=\"10\" bar_size=\"10\"/>\n```\n\n可用通过style来设置控件的显示风格，如字体的大小和颜色等等。如：\n\n```xml\n<!-- style -->\n<range_slider>\n<style name=\"default\">\n<normal bg_color=\"#A5A5A5\" border_color=\"#E7E6E6\" fg_color=\"#338FFF\" font_size=\"32\" selected_bg_color=\"#A5A5A5\" selected_fg_color=\"#00B0F0\" text_color=\"#000000\"/>\n</style>\n</range_slider>\n```",
+    "desc": "在xml中使用\"range\\_slider\"标签创建控件。如：\n\n```xml\n<!-- ui -->\n<range_slider name=\"range_slider1\" value1=\"25\" value2=\"75\" min=\"1\" max=\"100\" w=\"268\" h=\"28\"/>\n```\n\n可用通过style来设置控件的显示风格，如字体的大小和颜色等等。如：\n\n```xml\n<!-- style -->\n<range_slider>\n<style name=\"default\">\n<normal bg_color=\"#A5A5A5\" border_color=\"#E7E6E6\" fg_color=\"#338FFF\" font_size=\"32\" selected_bg_color=\"#A5A5A5\" selected_fg_color=\"#00B0F0\" text_color=\"#000000\"/>\n</style>\n</range_slider>\n```",
     "name": "range_slider_t",
     "parent": "widget_t",
     "annotation": {

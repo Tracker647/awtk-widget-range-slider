@@ -36,7 +36,7 @@ BEGIN_C_DECLS
  *
  * ```xml
  * <!-- ui -->
- * <range_slider name="range_slider1" value1="25" value2="75" min="1" max="100" w="268" h="28" dragger_size="10" bar_size="10"/>
+ * <range_slider name="range_slider1" value1="25" value2="75" min="1" max="100" w="268" h="28"/>
  * ```
  *
  * 可用通过style来设置控件的显示风格，如字体的大小和颜色等等。如：
@@ -101,18 +101,18 @@ typedef struct _range_slider_t {
   
   /* private */
   bool_t no_dragger_icon;
-  bool_t pressed;
-  bool_t dragging;
   rect_t dragger_rect1;
   rect_t dragger_rect2;
-  dragger_t dragger_rect11;
-  dragger_t dragger_rect22;
+  bool_t dragger1_dragging;
+  bool_t dragger2_dragging;
 } range_slider_t;
 
 #define RANGE_SLIDER(widget) ((range_slider_t*)(range_slider_cast(WIDGET(widget))))
 #define RANGE_SLIDER_PROP_VALUE1 "value1"
 #define RANGE_SLIDER_PROP_VALUE2 "value2"
 #define RANGE_SLIDER_PROP_DRAGGER_SIZE "dragger_size"
+#define STATE_DRAGGER1_PRESSED "dragger1_pressed"
+#define STATE_DRAGGER2_PRESSED "dragger2_pressed"
 
 /**
  * @method range_slider_create
