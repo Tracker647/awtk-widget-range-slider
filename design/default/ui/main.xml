@@ -3,5 +3,6 @@
   <view name="view" x="158" y="245" w="282" h="7" style:normal:bg_color="#A5A5A5"/>
   <dragger name="dragger1" x="158" y="232" w="21" h="32" animate:x_max="440" y_max="232" style:normal:bg_color="#E7E6E6" x_min="158" y_min="232"/>
   <dragger name="dragger1" x="189" y="232" w="21" h="32" animate:x_max="440" y_max="232" style:normal:bg_color="#E7E6E6" x_min="158" y_min="232"/>
-  <range_slider x="151" y="150" name="range_slider1" value1="20" value2="51" min="1" step="10" max="100" w="268" h="28" with_focus_state="true"/>
+  <range_slider x="151" y="142" name="range_slider1" bar_size="10" value1="25" value2="75" min="1" max="100" w="268" h="28" style="ocean" style:normal:border_color="#00000000"/>
+  <range_slider x="151" y="187" name="range_slider1" value1="25" value2="75" min="1" max="100" w="268" h="28" bar_size="5"/>
 </window>

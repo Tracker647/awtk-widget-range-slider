@@ -41,6 +41,9 @@
 #include "default/inc/images/check_checked_d.res"
 #include "default/inc/images/check_unchecked.res"
 #include "default/inc/images/check_unchecked_d.res"
+#include "default/inc/images/icons_slider_1.res"
+#include "default/inc/images/icons_slider_2.res"
+#include "default/inc/images/icons_slider_3.res"
 #include "default/inc/images/radio_checked.res"
 #include "default/inc/images/radio_checked_d.res"
 #include "default/inc/images/radio_unchecked.res"
@@ -102,6 +105,9 @@ ret_t assets_init_default(void) {
   assets_manager_add(am, image_check_checked_d);
   assets_manager_add(am, image_check_unchecked);
   assets_manager_add(am, image_check_unchecked_d);
+  assets_manager_add(am, image_icons_slider_1);
+  assets_manager_add(am, image_icons_slider_2);
+  assets_manager_add(am, image_icons_slider_3);
   assets_manager_add(am, image_radio_checked);
   assets_manager_add(am, image_radio_checked_d);
   assets_manager_add(am, image_radio_unchecked);

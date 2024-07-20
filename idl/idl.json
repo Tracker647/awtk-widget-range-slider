@@ -193,6 +193,19 @@
           "design": true,
           "scriptable": true
         }
+      },
+      {
+        "name": "dragger_adapt_to_icon",
+        "desc": "滑块的宽度或高度是否与icon适应，缺省为true。",
+        "type": "bool_t",
+        "annotation": {
+          "set_prop": true,
+          "get_prop": true,
+          "readable": true,
+          "persitent": true,
+          "design": true,
+          "scriptable": true
+        }
       }
     ],
     "header": "range_slider/range_slider.h",

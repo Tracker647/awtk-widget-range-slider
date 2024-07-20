@@ -98,19 +98,28 @@ typedef struct _range_slider_t {
    * 滑块的宽度或高度（单位：像素），缺省为 bar_size * 1.5。
    */
   uint32_t dragger_size;
-  
+
+  /**
+   * @property {bool_t} dragger_adapt_to_icon
+   * @annotation ["set_prop","get_prop","readable","persitent","design","scriptable"]
+   * 滑块的宽度或高度是否与icon适应，缺省为true。
+   */
+  bool_t dragger_adapt_to_icon;
+
   /* private */
   bool_t no_dragger_icon;
   rect_t dragger_rect1;
   rect_t dragger_rect2;
   bool_t dragger1_dragging;
   bool_t dragger2_dragging;
+  bool_t auto_get_dragger_size;
 } range_slider_t;
 
 #define RANGE_SLIDER(widget) ((range_slider_t*)(range_slider_cast(WIDGET(widget))))
 #define RANGE_SLIDER_PROP_VALUE1 "value1"
 #define RANGE_SLIDER_PROP_VALUE2 "value2"
 #define RANGE_SLIDER_PROP_DRAGGER_SIZE "dragger_size"
+#define RANGE_SLIDER_PROP_DRAGGER_ADAPT_TO_ICON "dragger_adapt_to_icon"
 #define STATE_DRAGGER1_PRESSED "dragger1_pressed"
 #define STATE_DRAGGER2_PRESSED "dragger2_pressed"
 
