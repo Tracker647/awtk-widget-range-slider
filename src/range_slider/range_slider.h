@@ -115,6 +115,21 @@ typedef struct _range_slider_t {
   bool_t auto_get_dragger_size;
 } range_slider_t;
 
+/**
+ * @event {value_change_event_t} EVT_VALUE_WILL_CHANGE
+ * 值即将改变事件。
+ */
+
+/**
+ * @event {value_change_event_t} EVT_VALUE_CHANGING
+ * 值正在改变事件(拖动中)。
+ */
+
+/**
+ * @event {value_change_event_t} EVT_VALUE_CHANGED
+ * 值改变事件。
+ */
+
 #define RANGE_SLIDER(widget) ((range_slider_t*)(range_slider_cast(WIDGET(widget))))
 #define RANGE_SLIDER_PROP_VALUE1 "value1"
 #define RANGE_SLIDER_PROP_VALUE2 "value2"
@@ -122,6 +137,7 @@ typedef struct _range_slider_t {
 #define RANGE_SLIDER_PROP_DRAGGER_ADAPT_TO_ICON "dragger_adapt_to_icon"
 #define STATE_DRAGGER1_PRESSED "dragger1_pressed"
 #define STATE_DRAGGER2_PRESSED "dragger2_pressed"
+
 
 /**
  * @method range_slider_create

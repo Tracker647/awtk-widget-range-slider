@@ -276,8 +276,11 @@
     <normal border_color="#E7E6E6"/>
     <pressed border_color="#0070C0"/>
   </style>
-  <style name="ocean">
-    <normal bg_color="#A5A5A5" border_color="#E7E6E6" fg_color="#00C2FF" font_size="32" icon="icons_slider_2" selected_bg_color="#A5A5A5" selected_fg_color="#00C2FF" text_color="#000000"/>
+  <style name="ocean1">
+    <normal bg_color="#00C2FF" border_color="#E7E6E6" fg_color="#4C728E" font_size="32" icon="icons_slider_2" selected_bg_color="#00C2FF" selected_fg_color="#4C728E" text_color="#000000"/>
+  </style>
+  <style name="ocean2">
+    <normal bg_color="#00C2FF" border_color="#E7E6E6" fg_color="#338FFF" font_size="32" selected_bg_color="#00C2FF" selected_fg_color="#00B0F0" text_color="#000000"/>
   </style>
 </range_slider>
 <scroll_bar_d>

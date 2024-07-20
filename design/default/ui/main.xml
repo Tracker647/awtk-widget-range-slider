@@ -1,8 +1,10 @@
 <window theme="main" name="main">
-  <slider name="slider" x="151" y="104" w="268" h="28" style:normal:bg_color="#A5A5A5" style:normal:border_color="#E7E6E6" value="40"/>
-  <view name="view" x="158" y="245" w="282" h="7" style:normal:bg_color="#A5A5A5"/>
-  <dragger name="dragger1" x="158" y="232" w="21" h="32" animate:x_max="440" y_max="232" style:normal:bg_color="#E7E6E6" x_min="158" y_min="232"/>
-  <dragger name="dragger1" x="189" y="232" w="21" h="32" animate:x_max="440" y_max="232" style:normal:bg_color="#E7E6E6" x_min="158" y_min="232"/>
-  <range_slider x="151" y="142" name="range_slider1" bar_size="10" value1="25" value2="75" min="1" max="100" w="268" h="28" style="ocean" style:normal:border_color="#00000000"/>
-  <range_slider x="151" y="187" name="range_slider1" value1="25" value2="75" min="1" max="100" w="268" h="28" bar_size="5"/>
+  <slider name="slider" x="158" y="74" w="261" h="58" style:normal:bg_color="#A5A5A5" style:normal:border_color="#00000000" style:normal:round_radius="0" style:pressed:round_radius="0" style:over:round_radius="0" style:disable:round_radius="0" style:focused:round_radius="0" style:normal:icon="icons_slider_2" style:pressed:icon="icons_slider_2" style:over:icon="icons_slider_2" style:disable:icon="icons_slider_2" style:focused:icon="icons_slider_2" style:pressed:border_color="#00000000" style:over:border_color="#00000000" style:disable:border_color="#00000000" style:focused:border_color="#00000000" value="40"/>
+  <range_slider x="466" y="304" name="range_slider1" bar_size="5" value1="25" value2="75" min="1" max="100" w="261" h="28" style="ocean1" style:normal:border_color="#00000000" step="0"/>
+  <range_slider x="158" y="282" name="range_slider1" value1="25" value2="75" min="1" max="100" w="261" h="34" bar_size="0" step="0" style:normal:border_color="#00000000"/>
+  <range_slider x="160" y="167" name="range_slider1" value1="25" value2="75" min="1" max="100" w="276" h="38" step="10" dragger_size="10" bar_size="5"/>
+  <label name="label" x="201" y="215" w="53" h="28" text="Label"/>
+  <label name="label" x="338" y="215" w="53" h="28" text="Label"/>
+  <label name="label" x="446" y="172" w="53" h="28" text="Label"/>
+  <label name="label" x="107" y="172" w="53" h="28" text="Label"/>
 </window>
