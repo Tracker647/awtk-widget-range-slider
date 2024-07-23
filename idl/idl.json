@@ -136,7 +136,7 @@
     "properties": [
       {
         "name": "value1",
-        "desc": "值1，最左为起点。",
+        "desc": "值1，最左为起点, 注意：value1和value2设值不能相跨！",
         "type": "double",
         "annotation": {
           "set_prop": true,
@@ -149,7 +149,7 @@
       },
       {
         "name": "value2",
-        "desc": "值2, 最右为起点。",
+        "desc": "值2, 最右为起点, 注意：value1和value2设值不能相跨！",
         "type": "double",
         "annotation": {
           "set_prop": true,
@@ -241,6 +241,19 @@
       {
         "name": "dragger_adapt_to_icon",
         "desc": "滑块的宽度或高度是否与icon适应，缺省为true。",
+        "type": "bool_t",
+        "annotation": {
+          "set_prop": true,
+          "get_prop": true,
+          "readable": true,
+          "persitent": true,
+          "design": true,
+          "scriptable": true
+        }
+      },
+      {
+        "name": "no_use_second_dragger",
+        "desc": "禁止使用第二个dragger，缺省为false。",
         "type": "bool_t",
         "annotation": {
           "set_prop": true,

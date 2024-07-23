@@ -55,13 +55,13 @@ typedef struct _range_slider_t {
   /**
    * @property {double} value1
    * @annotation ["set_prop","get_prop","readable","persitent","design","scriptable"]
-   * 值1，最左为起点。
+   * 值1，最左为起点, 注意：value1和value2设值不能相跨！
    */
   double value1;
   /**
    * @property {double} value2
    * @annotation ["set_prop","get_prop","readable","persitent","design","scriptable"]
-   * 值2, 最右为起点。
+   * 值2, 最右为起点, 注意：value1和value2设值不能相跨！
    */
   double value2;
   /**
@@ -112,6 +112,13 @@ typedef struct _range_slider_t {
    * 滑块的宽度或高度是否与icon适应，缺省为true。
    */
   bool_t dragger_adapt_to_icon;
+
+  /**
+   * @property {bool_t} no_use_second_dragger
+   * @annotation ["set_prop","get_prop","readable","persitent","design","scriptable"]
+   * 禁止使用第二个dragger，缺省为false。
+   */
+  bool_t no_use_second_dragger;
 
   /* private */
   bool_t no_dragger_icon;
@@ -164,11 +171,14 @@ typedef struct _range_slider_t {
 #define RANGE_SLIDER_PROP_DRAGGER_SIZE "dragger_size"
 #define RANGE_SLIDER_PROP_DRAGGER_ADAPT_TO_ICON "dragger_adapt_to_icon"
 #define RANGE_SLIDER_PROP_DRAGGER_STYLE "dragger_style"
+#define RANGE_SLIDER_PROP_NO_USE_SECOND_DRAGGER "no_use_second_dragger"
 #define RANGE_SLIDER_SUB_WIDGET_DRAGGER1 "dragger1"
 #define RANGE_SLIDER_SUB_WIDGET_DRAGGER2 "dragger2"
-#define STATE_DRAGGER1_PRESSED "dragger1_pressed"
-#define STATE_DRAGGER2_PRESSED "dragger2_pressed"
-
+#define RANGE_SLIDER_SUB_WIDGET_LABEL_MIN "label_min"
+#define RANGE_SLIDER_SUB_WIDGET_LABEL_MAX "label_max"
+#define RANGE_SLIDER_SUB_WIDGET_LABEL_VALUE1 "label_value1"
+#define RANGE_SLIDER_SUB_WIDGET_LABEL_VALUE2 "label_value2"
+#define RANGE_SLIDER_SUB_VIEW_RANGE_SLIDER_VIEW "range_slider_view"
 
 /**
  * @method range_slider_create

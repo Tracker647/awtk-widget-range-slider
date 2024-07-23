@@ -1,7 +1,14 @@
-基本的交互使用
-两个dragger的碰撞检测
-bar_size,dragger_size的显示效果验证
-step的效果验证
-dragger的style显示及独立于母widget
-事件回调（will_change,changing,changed）
+主线：
+基本的交互使用√
+两个dragger的碰撞检测√
+bar_size,dragger_size的显示效果验证√
+step的效果验证√
+dragger的style显示及独立于母widget√
+dragger使用icon时size自适应√
+事件回调（will_change,changing,changed）√
+可选只用一个滑块 √
 键盘控制
+区间label显示，值label实时渲染
+
+支线：
+底层bar圆角
