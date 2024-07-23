@@ -1,0 +1,7 @@
+基本的交互使用
+两个dragger的碰撞检测
+bar_size,dragger_size的显示效果验证
+step的效果验证
+dragger的style显示及独立于母widget
+事件回调（will_change,changing,changed）
+键盘控制

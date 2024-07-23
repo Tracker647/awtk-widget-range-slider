@@ -22,6 +22,8 @@
 #include "tkc/mem.h"
 #include "tkc/utils.h"
 #include "base/widget_vtable.h"
+#include "widgets/view.h"
+#include "widgets/button.h"
 #include "range_slider.h"
 #include <stdbool.h>
 
@@ -35,8 +37,11 @@ typedef enum {
   kDragger2 = 1,
 } dragger_index;
 
+
+
 static ret_t range_slider_load_icon(widget_t* widget, bitmap_t* img) {
   style_t* style = widget->astyle;
+  return_value_if_fail(style != NULL, RET_BAD_PARAMS);
   const char* image_name = style_get_str(style, STYLE_ID_ICON, NULL);
   if (image_name && widget_load_image(widget, image_name, img) == RET_OK) {
     return RET_OK;
@@ -62,6 +67,7 @@ static ret_t range_slider_set_dragger_size(widget_t* widget, uint32_t dragger_si
   range_slider_t* range_slider = RANGE_SLIDER(widget);
   return_value_if_fail(range_slider != NULL, RET_BAD_PARAMS);
   range_slider->dragger_size = dragger_size;
+  range_slider->auto_get_dragger_size = range_slider->dragger_size == 0;
   return widget_invalidate(widget, NULL);
 }
 
@@ -77,11 +83,25 @@ static uint32_t range_slider_get_dragger_size(widget_t* widget) {
     float_t ratio = system_info()->device_pixel_ratio;
     if (range_slider_load_icon(widget, &img) == RET_OK) {
       dragger_size = img.w / ratio;
-      DEBUG_RANGE_SLIDER(range_slider, "imgw: %d ratio: %.2lf dragger_size: %d\r\n", img.w, ratio,
-                         dragger_size);
     }
   }
   return dragger_size;
+}
+
+
+static ret_t range_slider_set_dragger_style(widget_t *widget, const char* style) {
+  range_slider_t* range_slider = RANGE_SLIDER(widget);
+  return_value_if_fail(range_slider != NULL, RET_BAD_PARAMS);
+  widget_t *dragger1 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_DRAGGER1);
+  widget_t *dragger2 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_DRAGGER2);
+  return_value_if_fail(dragger1 != NULL && dragger2 != NULL, RET_BAD_PARAMS);
+
+  range_slider->dragger_style = style;
+  widget_use_style(dragger1, range_slider->dragger_style);
+  widget_use_style(dragger2, range_slider->dragger_style);
+  
+
+  return widget_invalidate(dragger1, NULL) && widget_invalidate(dragger2, NULL);
 }
 
 static ret_t range_slider_get_prop(widget_t* widget, const char* name, value_t* v) {
@@ -111,174 +131,14 @@ static ret_t range_slider_get_prop(widget_t* widget, const char* name, value_t* 
   } else if (tk_str_eq(name, RANGE_SLIDER_PROP_DRAGGER_ADAPT_TO_ICON)) {
     value_set_bool(v, range_slider->dragger_adapt_to_icon);
     return RET_OK;
+  } else if(tk_str_eq(name, RANGE_SLIDER_PROP_DRAGGER_STYLE)) {
+    value_set_str(v, range_slider->dragger_style);
+    return RET_OK;
   }
 
   return RET_NOT_FOUND;
 }
 
-static ret_t range_slider_set_prop(widget_t* widget, const char* name, const value_t* v) {
-  range_slider_t* range_slider = RANGE_SLIDER(widget);
-  return_value_if_fail(widget != NULL && name != NULL && v != NULL, RET_BAD_PARAMS);
-
-  if (tk_str_eq(name, WIDGET_PROP_MIN)) {
-    range_slider->min = value_double(v);
-    return RET_OK;
-  } else if (tk_str_eq(name, WIDGET_PROP_MAX)) {
-    range_slider->max = value_double(v);
-    return RET_OK;
-  } else if (tk_str_eq(name, WIDGET_PROP_STEP)) {
-    range_slider->step = value_double(v);
-    return RET_OK;
-  } else if (tk_str_eq(name, RANGE_SLIDER_PROP_VALUE1)) {
-    range_slider->value1 = value_int(v);
-    return RET_OK;
-  } else if (tk_str_eq(name, RANGE_SLIDER_PROP_VALUE2)) {
-    range_slider->value2 = value_int(v);
-    return RET_OK;
-  } else if (tk_str_eq(name, WIDGET_PROP_BAR_SIZE)) {
-    return range_slider_set_bar_size(widget, value_uint32(v));
-  } else if (tk_str_eq(name, RANGE_SLIDER_PROP_DRAGGER_SIZE)) {
-    range_slider->dragger_size = value_uint32(v);
-    range_slider->auto_get_dragger_size = range_slider->dragger_size == 0;
-  } else if (tk_str_eq(name, RANGE_SLIDER_PROP_DRAGGER_ADAPT_TO_ICON)) {
-    range_slider->dragger_adapt_to_icon = value_bool(v);
-  }
-
-  return RET_NOT_FOUND;
-}
-
-static ret_t range_slider_on_destroy(widget_t* widget) {
-  range_slider_t* range_slider = RANGE_SLIDER(widget);
-  return_value_if_fail(widget != NULL && range_slider != NULL, RET_BAD_PARAMS);
-
-  return RET_OK;
-}
-
-static ret_t range_slider_update_dragger_rect(widget_t* widget, rect_t* dragger_rect, canvas_t* c) {
-  range_slider_t* range_slider = RANGE_SLIDER(widget);
-  return_value_if_fail(range_slider != NULL && dragger_rect != NULL && c != NULL, RET_BAD_PARAMS);
-  uint32_t dragger_size = range_slider_get_dragger_size(widget);
-  int32_t margin = 0;
-  margin = range_slider->no_dragger_icon ? 0 : style_get_int(widget->astyle, STYLE_ID_MARGIN, 0);
-  DEBUG_RANGE_SLIDER(range_slider, "dragger size: %d\r\n", range_slider->dragger_size);
-
-  double fvalue = 0;
-  if (dragger_rect == &range_slider->dragger_rect1) {
-    fvalue = (range_slider->value1 - range_slider->min) / (range_slider->max - range_slider->min);
-  } else if (dragger_rect == &range_slider->dragger_rect2) {
-    fvalue = (range_slider->value2 - range_slider->min) / (range_slider->max - range_slider->min);
-  }
-
-  if (range_slider->no_dragger_icon) {
-    dragger_rect->x = widget->w * fvalue - (dragger_size >> 1);
-  } else {
-    dragger_rect->x = margin + (widget->w - dragger_size - (margin << 1)) * fvalue;
-  }
-  dragger_rect->y = 0;
-  dragger_rect->w = dragger_size;
-  dragger_rect->h = widget->h;
-  return RET_OK;
-}
-
-static ret_t range_slider_get_bar_rect(widget_t* widget, rect_t* br, rect_t* fr1, rect_t* fr2) {
-  range_slider_t* range_slider = RANGE_SLIDER(widget);
-  return_value_if_fail(range_slider != NULL && br != NULL && fr1 != NULL && fr2 != NULL,
-                       RET_BAD_PARAMS);
-  uint32_t bar_size = range_slider_get_bar_size(widget);
-  rect_t* dr1 = &(range_slider->dragger_rect1);
-  rect_t* dr2 = &(range_slider->dragger_rect2);
-
-  /* fill background */
-  bar_size = tk_min(bar_size, widget->h);
-  br->x = 0;
-  br->h = bar_size;
-  br->w = widget->w;
-  br->y = (widget->h - bar_size) / 2;
-
-  /* fill foreground of value1 */
-  fr1->x = br->x;
-  fr1->y = br->y;
-  fr1->w = dr1->x - br->x + (dr1->w >> 1);
-  fr1->h = br->h;
-  /* fill foreground of value2 */
-  fr2->x = dr2->x + (dr2->w >> 1);
-  fr2->y = br->y;
-  fr2->w = widget->w - dr2->x - (dr2->w >> 1);
-  fr2->h = br->h;
-  return RET_OK;
-}
-
-static ret_t range_slider_fill_rect(widget_t* widget, canvas_t* c, rect_t* rect, bool is_fg) {
-  range_slider_t* range_slider = RANGE_SLIDER(widget);
-  return_value_if_fail(range_slider != NULL && c != NULL, RET_BAD_PARAMS);
-  const char* color_key = is_fg ? STYLE_ID_FG_COLOR : STYLE_ID_BG_COLOR;
-  const char* image_key = is_fg ? STYLE_ID_FG_IMAGE : STYLE_ID_BG_IMAGE;
-  const char* draw_type_key = is_fg ? STYLE_ID_FG_IMAGE_DRAW_TYPE : STYLE_ID_BG_IMAGE_DRAW_TYPE;
-
-  color_t trans = color_init(0, 0, 0, 0);
-
-  style_t* style = widget->astyle;
-  color_t color = style_get_color(style, color_key, trans);
-  canvas_set_fill_color(c, color);
-  canvas_fill_rect(c, rect->x, rect->y, rect->w, rect->h);
-  return RET_OK;
-}
-
-static ret_t range_slider_paint_dragger(widget_t* widget, rect_t* dragger, canvas_t* c) {
-  range_slider_t* range_slider = RANGE_SLIDER(widget);
-  return_value_if_fail(range_slider != NULL && c != NULL, RET_BAD_PARAMS);
-  style_t* style = widget->astyle;
-  color_t trans = color_init(0, 0, 0, 0);
-  if (range_slider->no_dragger_icon) {
-    return RET_OK;
-  }
-  color_t color = style_get_color(style, STYLE_ID_BORDER_COLOR, trans);
-  canvas_set_fill_color(c, color);
-  canvas_fill_rect(c, dragger->x, dragger->y, dragger->w, dragger->h);
-
-  bitmap_t img;
-  if (range_slider_load_icon(widget, &img) == RET_OK) {
-    canvas_draw_image_ex(c, &img, IMAGE_DRAW_ICON, dragger);
-  }
-  return RET_OK;
-}
-
-static ret_t range_slider_check_on_dragger_icon(widget_t* widget) {
-  bitmap_t img;
-  color_t color;
-  style_t* style = widget->astyle;
-  range_slider_t* range_slider = RANGE_SLIDER(widget);
-  color_t trans = color_init(0, 0, 0, 0);
-
-  ret_t ret = range_slider_load_icon(widget, &img);
-  color = style_get_color(style, STYLE_ID_BORDER_COLOR, trans);
-  if (color.rgba.a == 0 && ret != RET_OK) {
-    range_slider->no_dragger_icon = TRUE;
-  } else {
-    range_slider->no_dragger_icon = FALSE;
-  }
-  return RET_OK;
-}
-
-static ret_t range_slider_on_paint_self(widget_t* widget, canvas_t* c) {
-  range_slider_t* range_slider = RANGE_SLIDER(widget);
-  rect_t br, fr1, fr2;
-
-  return_value_if_fail(widget != NULL, RET_BAD_PARAMS);
-  range_slider_check_on_dragger_icon(widget);
-  range_slider_update_dragger_rect(widget, &range_slider->dragger_rect1, c);
-  range_slider_update_dragger_rect(widget, &range_slider->dragger_rect2, c);
-
-  return_value_if_fail(RET_OK == range_slider_get_bar_rect(widget, &br, &fr1, &fr2),
-                       RET_BAD_PARAMS);
-
-  range_slider_fill_rect(widget, c, &br, false);
-  range_slider_fill_rect(widget, c, &fr1, true);
-  range_slider_fill_rect(widget, c, &fr2, true);
-  range_slider_paint_dragger(widget, &range_slider->dragger_rect1, c);
-  range_slider_paint_dragger(widget, &range_slider->dragger_rect2, c);
-  return RET_OK;
-}
 
 static ret_t range_slider_set_value_internal(widget_t* widget, double value, event_type_t etype,
                                              dragger_index dr_idx) {
@@ -327,6 +187,212 @@ static ret_t range_slider_set_value_internal(widget_t* widget, double value, eve
   return RET_OK;
 }
 
+ret_t range_slider_set_value(widget_t *widget, dragger_index dr_idx, double value) {
+  range_slider_t* range_slider = RANGE_SLIDER(widget);
+  return_value_if_fail(range_slider != NULL, RET_BAD_PARAMS);
+
+  if(dr_idx == kDragger1 && range_slider->dragger1_dragging){
+    return RET_BUSY;
+  }
+  if(dr_idx == kDragger2 && range_slider->dragger2_dragging){
+    return RET_BUSY;
+  }
+
+  double *pvalue = (dr_idx == kDragger1) ? &range_slider->value1 : &range_slider->value2;
+  event_type_t evt_value_will_change = (dr_idx == kDragger1) ? EVT_VALUE1_WILL_CHANGE : EVT_VALUE2_WILL_CHANGE;
+  event_type_t evt_value_changed = (dr_idx == kDragger1) ? EVT_VALUE1_CHANGED : EVT_VALUE2_CHANGED;
+
+  if(*pvalue != value) {
+    value_change_event_t evt;
+    value_change_event_init(&evt, evt_value_will_change, widget);
+    value_set_uint32(&(evt.old_value), *pvalue);
+    value_set_uint32(&(evt.new_value), value);
+    if(widget_dispatch(widget, (event_t*)&evt) == RET_STOP) {
+      return RET_OK;
+    }
+    return range_slider_set_value_internal(widget, value, evt_value_changed, dr_idx);
+  }
+  return RET_OK;
+}
+
+static ret_t range_slider_dispatch_value_change_event(widget_t *widget, event_type_t evt_type, dragger_index dr_idx, double value) {
+  range_slider_t* range_slider = RANGE_SLIDER(widget);
+  return_value_if_fail(range_slider != NULL, RET_BAD_PARAMS);
+
+  double *pvalue = (dr_idx == kDragger1) ? &range_slider->value1 : &range_slider->value2;
+  value_change_event_t evt;
+  value_change_event_init(&evt, evt_type, widget);
+  value_set_uint32(&(evt.old_value), *pvalue);
+  value_set_uint32(&(evt.new_value), value);
+  if(widget_dispatch(widget, (event_t*)&evt) == RET_STOP) {
+    return RET_OK;
+  }
+  return RET_OK;
+}
+
+static ret_t range_slider_set_prop(widget_t* widget, const char* name, const value_t* v) {
+  range_slider_t* range_slider = RANGE_SLIDER(widget);
+  return_value_if_fail(widget != NULL && name != NULL && v != NULL, RET_BAD_PARAMS);
+
+  if (tk_str_eq(name, WIDGET_PROP_MIN)) {
+    range_slider->min = value_double(v);
+    return RET_OK;
+  } else if (tk_str_eq(name, WIDGET_PROP_MAX)) {
+    range_slider->max = value_double(v);
+    return RET_OK;
+  } else if (tk_str_eq(name, WIDGET_PROP_STEP)) {
+    range_slider->step = value_double(v);
+    return RET_OK;
+  } else if (tk_str_eq(name, RANGE_SLIDER_PROP_VALUE1)) {
+    range_slider_set_value(widget, kDragger1, value_double(v));
+    return RET_OK;
+  } else if (tk_str_eq(name, RANGE_SLIDER_PROP_VALUE2)) {
+    range_slider_set_value(widget, kDragger2, value_double(v));
+    return RET_OK;
+  } else if (tk_str_eq(name, WIDGET_PROP_BAR_SIZE)) {
+    return range_slider_set_bar_size(widget, value_uint32(v));
+  } else if (tk_str_eq(name, RANGE_SLIDER_PROP_DRAGGER_SIZE)) {
+    return range_slider_set_dragger_size(widget, value_uint32(v));
+  } else if (tk_str_eq(name, RANGE_SLIDER_PROP_DRAGGER_ADAPT_TO_ICON)) {
+    range_slider->dragger_adapt_to_icon = value_bool(v);
+    return RET_OK;
+  } else if(tk_str_eq(name, RANGE_SLIDER_PROP_DRAGGER_STYLE)) {
+    return range_slider_set_dragger_style(widget, value_str(v));
+  }
+
+  return RET_NOT_FOUND;
+}
+
+static ret_t range_slider_on_destroy(widget_t* widget) {
+  range_slider_t* range_slider = RANGE_SLIDER(widget);
+  return_value_if_fail(widget != NULL && range_slider != NULL, RET_BAD_PARAMS);
+
+  return RET_OK;
+}
+
+
+static ret_t range_slider_update_dragger_rect(widget_t* widget, widget_t* dragger, canvas_t* c) {
+  range_slider_t* range_slider = RANGE_SLIDER(widget);
+  return_value_if_fail(range_slider != NULL && dragger != NULL && c != NULL, RET_BAD_PARAMS);
+  widget_t *dragger1 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_DRAGGER1);
+  widget_t *dragger2 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_DRAGGER2);
+  return_value_if_fail(dragger1 != NULL && dragger2 != NULL, RET_BAD_PARAMS);
+
+  uint32_t dragger_size = range_slider_get_dragger_size(widget);
+  int32_t margin = 0;
+  margin = range_slider->no_dragger_icon ? 0 : style_get_int(widget->astyle, STYLE_ID_MARGIN, 0);
+
+  double fvalue = 0;
+  if (dragger == dragger1) {
+    fvalue = (range_slider->value1 - range_slider->min) / (range_slider->max - range_slider->min);
+  } else if (dragger == dragger2) {
+    fvalue = (range_slider->value2 - range_slider->min) / (range_slider->max - range_slider->min);
+  }
+
+  if (range_slider->no_dragger_icon) {
+    dragger->x = widget->w * fvalue - (dragger_size >> 1);
+  } else {
+    dragger->x = margin + (widget->w - dragger_size - (margin << 1)) * fvalue;
+  }
+  dragger->y = 0;
+  dragger->w = dragger_size;
+  dragger->h = widget->h;
+  return RET_OK;
+}
+
+static ret_t range_slider_get_bar_rect(widget_t* widget, rect_t* br, rect_t* fr1, rect_t* fr2) {
+  range_slider_t* range_slider = RANGE_SLIDER(widget);
+  return_value_if_fail(range_slider != NULL && br != NULL && fr1 != NULL && fr2 != NULL,
+                       RET_BAD_PARAMS);
+  widget_t *dragger1 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_DRAGGER1);
+  widget_t *dragger2 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_DRAGGER2);
+  return_value_if_fail(dragger1 != NULL && dragger2 != NULL, RET_BAD_PARAMS);
+
+  uint32_t bar_size = range_slider_get_bar_size(widget);
+  rect_t* dr1 = (rect_t*)dragger1;
+  rect_t* dr2 = (rect_t*)dragger2;
+
+  /* fill background */
+  bar_size = tk_min(bar_size, widget->h);
+  br->x = 0;
+  br->h = bar_size;
+  br->w = widget->w;
+  br->y = (widget->h - bar_size) / 2;
+
+  /* fill foreground of value1 */
+  fr1->x = br->x;
+  fr1->y = br->y;
+  fr1->w = dr1->x - br->x + (dr1->w >> 1);
+  fr1->h = br->h;
+  /* fill foreground of value2 */
+  fr2->x = dr2->x + (dr2->w >> 1);
+  fr2->y = br->y;
+  fr2->w = widget->w - dr2->x - (dr2->w >> 1);
+  fr2->h = br->h;
+  return RET_OK;
+}
+
+static ret_t range_slider_fill_rect(widget_t* widget, canvas_t* c, rect_t* rect, bool is_fg) {
+  range_slider_t* range_slider = RANGE_SLIDER(widget);
+  return_value_if_fail(range_slider != NULL && c != NULL, RET_BAD_PARAMS);
+  const char* color_key = is_fg ? STYLE_ID_FG_COLOR : STYLE_ID_BG_COLOR;
+  const char* image_key = is_fg ? STYLE_ID_FG_IMAGE : STYLE_ID_BG_IMAGE;
+  const char* draw_type_key = is_fg ? STYLE_ID_FG_IMAGE_DRAW_TYPE : STYLE_ID_BG_IMAGE_DRAW_TYPE;
+
+  color_t trans = color_init(0, 0, 0, 0);
+
+  style_t* style = widget->astyle;
+  color_t color = style_get_color(style, color_key, trans);
+  canvas_set_fill_color(c, color);
+  canvas_fill_rect(c, rect->x, rect->y, rect->w, rect->h);
+  return RET_OK;
+}
+
+
+
+static ret_t range_slider_check_on_dragger_icon(widget_t* widget) {
+  range_slider_t* range_slider = RANGE_SLIDER(widget);
+  return_value_if_fail(widget != NULL, RET_BAD_PARAMS);
+  widget_t *dragger = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_DRAGGER1);
+  return_value_if_fail(dragger != NULL, RET_BAD_PARAMS);
+  
+  bitmap_t img;
+  style_t* style = dragger->astyle;
+  color_t trans = color_init(0, 0, 0, 0);
+  ret_t ret = range_slider_load_icon(dragger, &img);
+  color_t color = style_get_color(style, STYLE_ID_BG_COLOR, trans);
+  if (color.rgba.a == 0 && ret != RET_OK) {
+    range_slider->no_dragger_icon = TRUE;
+  } else {
+    range_slider->no_dragger_icon = FALSE;
+  }
+  return RET_OK;
+}
+
+static ret_t range_slider_on_paint_self(widget_t* widget, canvas_t* c) {
+  range_slider_t* range_slider = RANGE_SLIDER(widget);
+  rect_t br, fr1, fr2;
+  return_value_if_fail(widget != NULL, RET_BAD_PARAMS);
+  widget_t *dragger1 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_DRAGGER1);
+  widget_t *dragger2 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_DRAGGER2);
+  return_value_if_fail(dragger1 != NULL && dragger2 != NULL, RET_BAD_PARAMS);
+
+  range_slider_check_on_dragger_icon(widget);
+  range_slider_update_dragger_rect(widget, dragger1, c);
+  range_slider_update_dragger_rect(widget, dragger2, c);
+
+  return_value_if_fail(RET_OK == range_slider_get_bar_rect(widget, &br, &fr1, &fr2),
+                       RET_BAD_PARAMS);
+
+  range_slider_fill_rect(widget, c, &br, false);
+  range_slider_fill_rect(widget, c, &fr1, true);
+  range_slider_fill_rect(widget, c, &fr2, true);
+
+  return RET_OK;
+}
+
+
+
 static ret_t range_slider_change_value_by_pointer_event(widget_t* widget, pointer_event_t* evt,
                                                         dragger_index dr_idx) {
   range_slider_t* range_slider = RANGE_SLIDER(widget);
@@ -347,23 +413,30 @@ static ret_t range_slider_change_value_by_pointer_event(widget_t* widget, pointe
   value += range_slider->min;
   value = tk_clamp(value, range_slider->min, range_slider->max);
 
-  return range_slider_set_value_internal(widget, value, EVT_VALUE_CHANGING, dr_idx);
+  event_type_t evt_value_changing = (dr_idx == kDragger1) ? EVT_VALUE1_CHANGING : EVT_VALUE2_CHANGING;
+  return range_slider_set_value_internal(widget, value, evt_value_changing, dr_idx);
   
 }
 
 static ret_t range_slider_on_event(widget_t* widget, event_t* e) {
   range_slider_t* range_slider = RANGE_SLIDER(widget);
   return_value_if_fail(widget != NULL && range_slider != NULL, RET_BAD_PARAMS);
+  widget_t *dragger1 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_DRAGGER1);
+  widget_t *dragger2 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_DRAGGER2);
+  return_value_if_fail(dragger1 != NULL && dragger2 != NULL, RET_BAD_PARAMS);
+
   pointer_event_t* evt = (pointer_event_t*)e;
   point_t p = {evt->x, evt->y};
   switch (e->type) {
     case EVT_POINTER_DOWN: {
-      rect_t *dr1 = &range_slider->dragger_rect1, *dr2 = &range_slider->dragger_rect2;
+      rect_t *dr1 = (rect_t*)dragger1, *dr2 = (rect_t*)dragger2;
       widget_to_local(widget, &p);
       if (rect_contains(dr1, p.x, p.y)) {
+        range_slider_dispatch_value_change_event(widget, EVT_VALUE1_WILL_CHANGE, kDragger1, 0);
         range_slider->dragger1_dragging = TRUE;
         range_slider->dragger2_dragging = FALSE;
       } else if (rect_contains(dr2, p.x, p.y)) {
+        range_slider_dispatch_value_change_event(widget, EVT_VALUE2_WILL_CHANGE, kDragger2, 0);
         range_slider->dragger2_dragging = TRUE;
         range_slider->dragger1_dragging = FALSE;
       }
@@ -384,9 +457,11 @@ static ret_t range_slider_on_event(widget_t* widget, event_t* e) {
       if (range_slider->dragger1_dragging) {
         range_slider->dragger1_dragging = FALSE;
         range_slider_change_value_by_pointer_event(widget, evt, kDragger1);
+        range_slider_dispatch_value_change_event(widget, EVT_VALUE1_CHANGED, kDragger1, 0);
       } else if (range_slider->dragger2_dragging) {
         range_slider->dragger2_dragging = FALSE;
         range_slider_change_value_by_pointer_event(widget, evt, kDragger2);
+        range_slider_dispatch_value_change_event(widget, EVT_VALUE2_CHANGED, kDragger2, 0);
       }
       widget_ungrab(widget->parent, widget);
       break;
@@ -416,7 +491,7 @@ TK_DECL_VTABLE(range_slider) = {.size = sizeof(range_slider_t),
 widget_t* range_slider_create(widget_t* parent, xy_t x, xy_t y, wh_t w, wh_t h) {
   widget_t* widget = widget_create(parent, TK_REF_VTABLE(range_slider), x, y, w, h);
   range_slider_t* range_slider = RANGE_SLIDER(widget);
-  return_value_if_fail(range_slider != NULL, NULL);
+  return_value_if_fail(range_slider != NULL, RET_BAD_PARAMS);
   range_slider->min = 0;
   range_slider->max = 100;
   range_slider->value1 = 0;
@@ -426,6 +501,16 @@ widget_t* range_slider_create(widget_t* parent, xy_t x, xy_t y, wh_t w, wh_t h) 
   range_slider->dragger2_dragging = FALSE;
   range_slider->auto_get_dragger_size = TRUE;
   range_slider->dragger_adapt_to_icon = TRUE;
+
+  widget_t* dragger1 = button_create(widget, 0, 0, 0, 0);
+  widget_t* dragger2 = button_create(widget, 0, 0, 0, 0);
+  return_value_if_fail(dragger1 != NULL && dragger2 != NULL, RET_BAD_PARAMS);
+  widget_set_name(dragger1, RANGE_SLIDER_SUB_WIDGET_DRAGGER1);
+  widget_set_name(dragger2, RANGE_SLIDER_SUB_WIDGET_DRAGGER2);
+  dragger1->auto_created = TRUE;
+  dragger2->auto_created = TRUE;
+
+  range_slider->dragger_style = "default";
   return widget;
 }
 

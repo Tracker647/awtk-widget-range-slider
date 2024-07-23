@@ -1,10 +1,21 @@
 <window theme="main" name="main">
   <slider name="slider" x="158" y="74" w="261" h="58" style:normal:bg_color="#A5A5A5" style:normal:border_color="#00000000" style:normal:round_radius="0" style:pressed:round_radius="0" style:over:round_radius="0" style:disable:round_radius="0" style:focused:round_radius="0" style:normal:icon="icons_slider_2" style:pressed:icon="icons_slider_2" style:over:icon="icons_slider_2" style:disable:icon="icons_slider_2" style:focused:icon="icons_slider_2" style:pressed:border_color="#00000000" style:over:border_color="#00000000" style:disable:border_color="#00000000" style:focused:border_color="#00000000" value="40"/>
-  <range_slider x="466" y="304" name="range_slider1" bar_size="5" value1="25" value2="75" min="1" max="100" w="261" h="28" style="ocean1" style:normal:border_color="#00000000" step="0"/>
-  <range_slider x="158" y="282" name="range_slider1" value1="25" value2="75" min="1" max="100" w="261" h="34" bar_size="0" step="0" style:normal:border_color="#00000000"/>
-  <range_slider x="160" y="167" name="range_slider1" value1="25" value2="75" min="1" max="100" w="276" h="38" step="10" dragger_size="10" bar_size="5"/>
+  <range_slider x="160" y="167" name="range_slider1" value1="50" value2="90" min="1" max="100" w="276" h="38" step="10" dragger_size="10" bar_size="5" dragger_style="default" style:over:bg_color="#D0CECE"/>
+  <range_slider x="158" y="260" name="range_slider1" value1="25" value2="100" min="1" max="100" w="261" h="34" bar_size="0" step="0" style:normal:border_color="#00000000" style:over:bg_color="#E7E6E6" style:normal:border_width="0" style:normal:round_radius="5" dragger_style="no_dragger"/>
+  <range_slider x="160" y="304" name="range_slider1" bar_size="5" value1="0" value2="100" min="1" max="100" w="261" h="28" style="default" style:normal:border_color="#00000000" step="0" dragger_style="default"/>
   <label name="label" x="201" y="215" w="53" h="28" text="Label"/>
   <label name="label" x="338" y="215" w="53" h="28" text="Label"/>
   <label name="label" x="446" y="172" w="53" h="28" text="Label"/>
   <label name="label" x="107" y="172" w="53" h="28" text="Label"/>
+  <view name="range_slider_view" x="100" y="350" w="449" h="96">
+    <label name="label_min" x="385" y="0" w="64" h="48" text="Label"/>
+    <label name="label_max" x="0" y="0" w="61" h="48" text="Label"/>
+    <view name="range_slider_container" x="61" y="0" w="324" h="48">
+      <view name="bottom_bar" x="0" y="25%" w="324" h="50%"/>
+      <view name="dragger1" x="51" y="0" w="22" h="100%"/>
+      <view name="dragger2" x="250" y="0" w="22" h="100%"/>
+    </view>
+    <label name="label_value1" x="92" y="48" w="64" h="48" text="Label"/>
+    <label name="label_value2" x="290" y="48" w="64" h="48" text="Label"/>
+  </view>
 </window>

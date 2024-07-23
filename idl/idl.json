@@ -101,7 +101,38 @@
         }
       }
     ],
-    "events": [],
+    "events": [
+      {
+        "name": "EVT_VALUE1_WILL_CHANGE",
+        "desc": "值1即将改变事件。",
+        "type": "value_change_event_t"
+      },
+      {
+        "name": "EVT_VALUE1_CHANGING",
+        "desc": "值1正在改变事件(拖动中)。",
+        "type": "value_change_event_t"
+      },
+      {
+        "name": "EVT_VALUE1_CHANGED",
+        "desc": "值1改变事件。",
+        "type": "value_change_event_t"
+      },
+      {
+        "name": "EVT_VALUE2_WILL_CHANGE",
+        "desc": "值2即将改变事件。",
+        "type": "value_change_event_t"
+      },
+      {
+        "name": "EVT_VALUE2_CHANGING",
+        "desc": "值2正在改变事件(拖动中)。",
+        "type": "value_change_event_t"
+      },
+      {
+        "name": "EVT_VALUE2_CHANGED",
+        "desc": "值2改变事件。",
+        "type": "value_change_event_t"
+      }
+    ],
     "properties": [
       {
         "name": "value1",
@@ -172,6 +203,19 @@
         "name": "bar_size",
         "desc": "轴的宽度或高度（单位：像素），为0表示为控件的宽度或高度的一半，缺省为0。",
         "type": "uint32_t",
+        "annotation": {
+          "set_prop": true,
+          "get_prop": true,
+          "readable": true,
+          "persitent": true,
+          "design": true,
+          "scriptable": true
+        }
+      },
+      {
+        "name": "dragger_style",
+        "desc": "渲染dragger的style名称,默认为default。",
+        "type": "char*",
         "annotation": {
           "set_prop": true,
           "get_prop": true,

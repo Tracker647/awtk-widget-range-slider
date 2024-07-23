@@ -12,6 +12,12 @@
     <over icon="arrow_down_o"/>
     <pressed icon="arrow_down_p"/>
   </style>
+  <style name="no_dragger">
+    <normal bg_color="#00000000" border_color="#00000000" round_radius="4" text_color="#00000000"/>
+  </style>
+  <style name="ocean">
+    <normal bg_color="#00FFFF" border_color="#C2C2C2" round_radius="4" text_color="#444444"/>
+  </style>
   <style name="scroll_down" bg_color="#F2F2F2">
     <normal icon="arrow_down_n"/>
     <disable bg_color="#F2F2F266" border_color="#C2C2C266" icon="arrow_down_d"/>

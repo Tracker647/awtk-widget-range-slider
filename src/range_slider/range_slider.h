@@ -93,6 +93,13 @@ typedef struct _range_slider_t {
   uint32_t bar_size;
 
   /**
+   * @property {char*} dragger_style
+   * @annotation ["set_prop","get_prop","readable","persitent","design","scriptable"]
+   * 渲染dragger的style名称,默认为default。
+   */
+  char* dragger_style;
+
+  /**
    * @property {uint32_t} dragger_size
    * @annotation ["set_prop","get_prop","readable","persitent","design","scriptable"]
    * 滑块的宽度或高度（单位：像素），缺省为 bar_size * 1.5。
@@ -108,33 +115,57 @@ typedef struct _range_slider_t {
 
   /* private */
   bool_t no_dragger_icon;
-  rect_t dragger_rect1;
-  rect_t dragger_rect2;
   bool_t dragger1_dragging;
   bool_t dragger2_dragging;
   bool_t auto_get_dragger_size;
 } range_slider_t;
 
 /**
- * @event {value_change_event_t} EVT_VALUE_WILL_CHANGE
- * 值即将改变事件。
+ * @event {value_change_event_t} EVT_VALUE1_WILL_CHANGE
+ * 值1即将改变事件。
  */
 
 /**
- * @event {value_change_event_t} EVT_VALUE_CHANGING
- * 值正在改变事件(拖动中)。
+ * @event {value_change_event_t} EVT_VALUE1_CHANGING
+ * 值1正在改变事件(拖动中)。
  */
 
 /**
- * @event {value_change_event_t} EVT_VALUE_CHANGED
- * 值改变事件。
+ * @event {value_change_event_t} EVT_VALUE1_CHANGED
+ * 值1改变事件。
  */
+
+/**
+ * @event {value_change_event_t} EVT_VALUE2_WILL_CHANGE
+ * 值2即将改变事件。
+ */
+
+/**
+ * @event {value_change_event_t} EVT_VALUE2_CHANGING
+ * 值2正在改变事件(拖动中)。
+ */
+
+/**
+ * @event {value_change_event_t} EVT_VALUE2_CHANGED
+ * 值2改变事件。
+ */
+
+#define EVT_VALUE1_WILL_CHANGE (EVT_USER_START + 1)
+#define EVT_VALUE1_CHANGING (EVT_USER_START + 2)
+#define EVT_VALUE1_CHANGED (EVT_USER_START + 3)
+#define EVT_VALUE2_WILL_CHANGE (EVT_USER_START + 4)
+#define EVT_VALUE2_CHANGING (EVT_USER_START + 5)
+#define EVT_VALUE2_CHANGED (EVT_USER_START + 6)
+
 
 #define RANGE_SLIDER(widget) ((range_slider_t*)(range_slider_cast(WIDGET(widget))))
 #define RANGE_SLIDER_PROP_VALUE1 "value1"
 #define RANGE_SLIDER_PROP_VALUE2 "value2"
 #define RANGE_SLIDER_PROP_DRAGGER_SIZE "dragger_size"
 #define RANGE_SLIDER_PROP_DRAGGER_ADAPT_TO_ICON "dragger_adapt_to_icon"
+#define RANGE_SLIDER_PROP_DRAGGER_STYLE "dragger_style"
+#define RANGE_SLIDER_SUB_WIDGET_DRAGGER1 "dragger1"
+#define RANGE_SLIDER_SUB_WIDGET_DRAGGER2 "dragger2"
 #define STATE_DRAGGER1_PRESSED "dragger1_pressed"
 #define STATE_DRAGGER2_PRESSED "dragger2_pressed"
 
