@@ -7,8 +7,8 @@ dragger的style显示及独立于母widget√
 dragger使用icon时size自适应√
 事件回调（will_change,changing,changed）√
 可选只用一个滑块 √
-键盘控制
+键盘控制 √ -->如何与awtk自带的按键焦点切换功能相调和？
 区间label显示，值label实时渲染
 
 支线：
-底层bar圆角
+底层bar圆角 √

@@ -27,6 +27,14 @@
 #include "widgets/dragger.h"
 
 BEGIN_C_DECLS
+typedef enum {
+  kRangeSilderFocus_view = 0,
+  kRangeSilderFocus_dragger1,
+  kRangeSilderFocus_dragger2,
+  kRangeSilderWillMove_dragger1,
+  kRangeSilderWillMove_dragger2
+} enFocusState;
+
 /**
  * @class range_slider_t
  * @parent widget_t
@@ -120,7 +128,24 @@ typedef struct _range_slider_t {
    */
   bool_t no_use_second_dragger;
 
+  /**
+   * @property {bool_t} range_label_visible
+   * @annotation ["set_prop","get_prop","readable","persitent","design","scriptable"]
+   * 是否在控件widget左右显示min和max的label，缺省为true
+   */
+  bool_t range_slider_visible;
+
+  /**
+   * @property {bool_t} value_label_visible
+   * @annotation ["set_prop","get_prop","readable","persitent","design","scriptable"]
+   * 是否在控件widget下方显示value1和value2的label，缺省为true
+   */
+  bool_t value_label_visible;
+
+
   /* private */
+  enFocusState prev_key_state; 
+  enFocusState curr_key_state; /* 键盘控制模式下的状态 */ 
   bool_t no_dragger_icon;
   bool_t dragger1_dragging;
   bool_t dragger2_dragging;

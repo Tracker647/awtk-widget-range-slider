@@ -21,11 +21,14 @@
 
 #include "tkc/mem.h"
 #include "tkc/utils.h"
+#include "base/enums.h"
 #include "base/widget_vtable.h"
 #include "widgets/view.h"
-#include "widgets/button.h"
+#include "widgets/label.h"
+#include "widgets/check_button.h"
 #include "range_slider.h"
 #include <stdbool.h>
+#include <string.h>
 
 #define DEBUG_RANGE_SLIDER(_slider_, fmt, ...)                         \
   printf("range_slider %s(%#x) |> ", _slider_->widget.name, _slider_); \
@@ -202,6 +205,40 @@ ret_t range_slider_set_value(widget_t *widget, dragger_index dr_idx, double valu
   return RET_OK;
 }
 
+ret_t range_slider_inc(widget_t *widget, dragger_index dr_idx) {
+  range_slider_t* range_slider = RANGE_SLIDER(widget);
+  return_value_if_fail(range_slider != NULL, RET_BAD_PARAMS);
+  double delta = range_slider->step ? range_slider->step : 1;
+  double *pvalue = (dr_idx == kDragger1) ? &(range_slider->value1) : &(range_slider->value2);
+
+  double new_value = *pvalue + delta;
+  if(new_value < range_slider->min){
+    new_value = range_slider->min;
+  }
+  if(new_value > range_slider->max){
+    new_value = range_slider->max;
+  }
+  printf("step: %.2lf delta: %.2lf new value: %.2lf\r\n", range_slider->step, delta, new_value);
+  return range_slider_set_value(widget, dr_idx, new_value);
+}
+
+ret_t range_slider_dec(widget_t *widget, dragger_index dr_idx) {
+  range_slider_t* range_slider = RANGE_SLIDER(widget);
+  return_value_if_fail(range_slider != NULL, RET_BAD_PARAMS);
+  double delta = range_slider->step ? range_slider->step : 1;
+  double *pvalue = (dr_idx == kDragger1) ? &(range_slider->value1) : &(range_slider->value2);
+  double new_value = *pvalue - delta;
+  if(new_value < range_slider->min){
+    new_value = range_slider->min;
+  }
+  if(new_value > range_slider->max){
+    new_value = range_slider->max;
+  }
+  printf("step: %.2lf delta: %.2lf new value: %.2lf\r\n", range_slider->step, delta, new_value);
+  return range_slider_set_value(widget, dr_idx, new_value);
+}
+
+
 static ret_t range_slider_dispatch_value_change_event(widget_t *widget, event_type_t evt_type, dragger_index dr_idx, double value) {
   range_slider_t* range_slider = RANGE_SLIDER(widget);
   return_value_if_fail(range_slider != NULL, RET_BAD_PARAMS);
@@ -239,6 +276,7 @@ static ret_t range_slider_set_no_use_second_dragger(widget_t* widget, bool_t no_
 static ret_t range_slider_get_prop(widget_t* widget, const char* name, value_t* v) {
   range_slider_t* range_slider = RANGE_SLIDER(widget);
   return_value_if_fail(range_slider != NULL && name != NULL && v != NULL, RET_BAD_PARAMS);
+
   if (tk_str_eq(name, WIDGET_PROP_MIN)) {
     value_set_double(v, range_slider->min);
     return RET_OK;
@@ -247,6 +285,9 @@ static ret_t range_slider_get_prop(widget_t* widget, const char* name, value_t* 
     return RET_OK;
   } else if (tk_str_eq(name, WIDGET_PROP_STEP)) {
     value_set_double(v, range_slider->step);
+    return RET_OK;
+  } else if(tk_str_eq(name, WIDGET_PROP_FOCUSABLE)) {
+    value_set_bool(v, range_slider->widget.focusable);
     return RET_OK;
   } else if (tk_str_eq(name, RANGE_SLIDER_PROP_VALUE1)) {
     value_set_double(v, range_slider->value1);
@@ -278,12 +319,19 @@ static ret_t range_slider_get_prop(widget_t* widget, const char* name, value_t* 
 static ret_t range_slider_set_prop(widget_t* widget, const char* name, const value_t* v) {
   range_slider_t* range_slider = RANGE_SLIDER(widget);
   return_value_if_fail(widget != NULL && name != NULL && v != NULL, RET_BAD_PARAMS);
+  widget_t *dragger1 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_DRAGGER1);
+  widget_t *dragger2 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_DRAGGER2);
+  return_value_if_fail(dragger1 != NULL && dragger2 != NULL, RET_BAD_PARAMS);
 
   if (tk_str_eq(name, WIDGET_PROP_MIN)) {
     range_slider->min = value_double(v);
     return RET_OK;
   } else if (tk_str_eq(name, WIDGET_PROP_MAX)) {
     range_slider->max = value_double(v);
+    return RET_OK;
+  } else if(tk_str_eq(name, WIDGET_PROP_FOCUSABLE)) {
+    widget_set_focusable(dragger1, value_bool(v));
+    widget_set_focusable(dragger2, value_bool(v));
     return RET_OK;
   } else if (tk_str_eq(name, WIDGET_PROP_STEP)) {
     range_slider->step = value_double(v);
@@ -379,19 +427,29 @@ static ret_t range_slider_get_bar_rect(widget_t* widget, rect_t* br, rect_t* fr1
   return RET_OK;
 }
 
-static ret_t range_slider_fill_rect(widget_t* widget, canvas_t* c, rect_t* rect, bool is_fg) {
+static ret_t range_slider_fill_rect(widget_t* widget, canvas_t* c, rect_t* rect, rect_t* br, bool is_fg) {
   range_slider_t* range_slider = RANGE_SLIDER(widget);
   return_value_if_fail(range_slider != NULL && c != NULL, RET_BAD_PARAMS);
   const char* color_key = is_fg ? STYLE_ID_FG_COLOR : STYLE_ID_BG_COLOR;
   const char* image_key = is_fg ? STYLE_ID_FG_IMAGE : STYLE_ID_BG_IMAGE;
   const char* draw_type_key = is_fg ? STYLE_ID_FG_IMAGE_DRAW_TYPE : STYLE_ID_BG_IMAGE_DRAW_TYPE;
-
-  color_t trans = color_init(0, 0, 0, 0);
-
   style_t* style = widget->astyle;
+  color_t trans = color_init(0, 0, 0, 0);
+  uint32_t radius = style_get_int(style, STYLE_ID_ROUND_RADIUS, 0);
+
   color_t color = style_get_color(style, color_key, trans);
-  canvas_set_fill_color(c, color);
-  canvas_fill_rect(c, rect->x, rect->y, rect->w, rect->h);
+  if(color.rgba.a && rect->w > 0 && rect->h > 0){
+    canvas_set_fill_color(c, color);
+    if(radius > 3){
+      ret_t ret = canvas_fill_rounded_rect(c, rect, br, &color, radius);
+      // 对于底层背景bar, 若圆角直径大于 rect 矩形的宽高, 会返回RET_FAIL, 此时需要按无圆角矩形的方法填充
+      if (ret != RET_OK) {
+        canvas_fill_rect(c, rect->x, rect->y, rect->w, rect->h);
+      }
+    }else{
+      canvas_fill_rect(c, rect->x, rect->y, rect->w, rect->h);
+    }
+  }
   return RET_OK;
 }
 
@@ -431,10 +489,10 @@ static ret_t range_slider_on_paint_self(widget_t* widget, canvas_t* c) {
   return_value_if_fail(RET_OK == range_slider_get_bar_rect(widget, &br, &fr1, &fr2),
                        RET_BAD_PARAMS);
 
-  range_slider_fill_rect(widget, c, &br, false);
-  range_slider_fill_rect(widget, c, &fr1, true);
+  range_slider_fill_rect(widget, c, &br, NULL, false);
+  range_slider_fill_rect(widget, c, &fr1, &br, true);
   if(range_slider->no_use_second_dragger == FALSE)
-    range_slider_fill_rect(widget, c, &fr2, true);
+    range_slider_fill_rect(widget, c, &fr2, &br, true);
   return RET_OK;
 }
 
@@ -464,6 +522,131 @@ static ret_t range_slider_change_value_by_pointer_event(widget_t* widget, pointe
   return range_slider_set_value_internal(widget, value, evt_value_changing, dr_idx);
   
 }
+
+static ret_t range_slider_parse_key_state(widget_t *widget, key_event_t* evt){
+  range_slider_t* range_slider = RANGE_SLIDER(widget);
+  return_value_if_fail(widget != NULL && range_slider != NULL, RET_BAD_PARAMS);
+  widget_t *dragger1 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_DRAGGER1);
+  widget_t *dragger2 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_DRAGGER2);
+  return_value_if_fail(dragger1 != NULL && dragger2 != NULL, RET_BAD_PARAMS);
+
+  switch(range_slider->curr_key_state){
+    case kRangeSilderFocus_view:
+      if(range_slider->prev_key_state == kRangeSilderFocus_dragger1 || range_slider->prev_key_state == kRangeSilderFocus_dragger2){
+        widget_set_focused(dragger1, FALSE);
+        widget_set_focused(dragger2, FALSE);
+      }
+      widget_set_focused(widget, TRUE);
+      break;
+    case kRangeSilderFocus_dragger1:
+      if(range_slider->prev_key_state == kRangeSilderFocus_view){
+        widget_set_focused(range_slider, FALSE);
+      }
+      if(range_slider->prev_key_state == kRangeSilderFocus_dragger2){
+        widget_set_focused(dragger2, FALSE);
+      }
+      widget_set_focused(dragger1, TRUE);
+      break;
+    case kRangeSilderFocus_dragger2:
+      if(range_slider->prev_key_state == kRangeSilderFocus_view){
+        widget_set_focused(range_slider, FALSE);
+      }
+      if(range_slider->prev_key_state == kRangeSilderFocus_dragger1){
+        widget_set_focused(dragger1, FALSE);
+      }
+      widget_set_focused(dragger2, TRUE);
+      break;
+    case kRangeSilderWillMove_dragger1:
+      if(evt->key == TK_KEY_LEFT){
+        range_slider_dec(widget, kDragger1);
+      }
+      else if(evt->key == TK_KEY_RIGHT){
+        range_slider_inc(widget, kDragger1);
+      }
+      break;
+    case kRangeSilderWillMove_dragger2:
+      if(evt->key == TK_KEY_LEFT){
+        range_slider_dec(widget, kDragger2);
+      }
+      else if(evt->key == TK_KEY_RIGHT){
+        range_slider_inc(widget, kDragger2);
+      }
+      break;
+    default:
+      break;
+  }
+}
+
+static void range_slider_print_key_state(widget_t *widget){
+  range_slider_t* range_slider = RANGE_SLIDER(widget);
+  return_value_if_fail(widget != NULL && range_slider != NULL, RET_BAD_PARAMS);
+
+  const char* mes[] = {
+    "kRangeSilderFocus_view",
+    "kRangeSilderFocus_dragger1",
+    "kRangeSilderFocus_dragger2",
+    "kRangeSilderWillMove_dragger1",
+    "kRangeSilderWillMove_dragger2"
+  };
+
+  DEBUG_RANGE_SLIDER(range_slider, "range_slider->curr_key_state = %s", mes[range_slider->curr_key_state])
+}
+
+static ret_t range_slider_deal_key(widget_t *widget, key_event_t* evt){
+  range_slider_t* range_slider = RANGE_SLIDER(widget);
+  return_value_if_fail(widget != NULL && range_slider != NULL, RET_BAD_PARAMS);
+
+  range_slider->prev_key_state = range_slider->curr_key_state;
+  const key_type_value_t *ktv = keys_type_find_by_value(evt->key);
+  printf("evt->key: %s\r\n", ktv->name);
+  switch(evt->key){
+    case TK_KEY_RETURN:
+      if(range_slider->curr_key_state == kRangeSilderFocus_view){
+        range_slider->curr_key_state = kRangeSilderFocus_dragger1;
+      }
+      else if(range_slider->curr_key_state == kRangeSilderFocus_dragger1){
+        range_slider->curr_key_state = kRangeSilderWillMove_dragger1;
+      }
+      else if(range_slider->curr_key_state == kRangeSilderFocus_dragger2){
+        range_slider->curr_key_state = kRangeSilderWillMove_dragger2;
+      }
+      break;
+    case TK_KEY_ESCAPE:
+      if(range_slider->curr_key_state == kRangeSilderWillMove_dragger1){
+        range_slider->curr_key_state = kRangeSilderFocus_dragger1;
+      }
+      else if(range_slider->curr_key_state == kRangeSilderWillMove_dragger2){
+        range_slider->curr_key_state = kRangeSilderFocus_dragger2;
+      }
+      else if(range_slider->curr_key_state == kRangeSilderFocus_dragger1 || range_slider->curr_key_state == kRangeSilderFocus_dragger2){
+        range_slider->curr_key_state = kRangeSilderFocus_view;
+      }
+      break;
+    case TK_KEY_LEFT:
+      if(range_slider->curr_key_state == kRangeSilderFocus_dragger2){
+        range_slider->curr_key_state = kRangeSilderFocus_dragger1;
+      }
+      else if(range_slider->curr_key_state == kRangeSilderWillMove_dragger1){
+      }
+      else if(range_slider->curr_key_state == kRangeSilderWillMove_dragger2){
+      }
+      break;
+    case TK_KEY_RIGHT:
+      if(range_slider->curr_key_state == kRangeSilderFocus_dragger1){
+        range_slider->curr_key_state = kRangeSilderFocus_dragger2;
+      }
+      else if(range_slider->curr_key_state == kRangeSilderWillMove_dragger1){
+      }
+      else if(range_slider->curr_key_state == kRangeSilderWillMove_dragger2){
+      }
+      break;
+    default:
+      return RET_FAIL;
+  }
+  range_slider_print_key_state(range_slider);
+  return range_slider_parse_key_state(range_slider,evt);
+}
+
 
 static ret_t range_slider_on_event(widget_t* widget, event_t* e) {
   range_slider_t* range_slider = RANGE_SLIDER(widget);
@@ -523,11 +706,40 @@ static ret_t range_slider_on_event(widget_t* widget, event_t* e) {
     case EVT_POINTER_ENTER:
       widget_set_state(widget, WIDGET_STATE_OVER);
       break;
+    case EVT_KEY_DOWN: 
+      key_event_t *evt = (key_event_t*)e;
+      const key_type_value_t *kvt = keys_type_find_by_value(evt->key);
+      bool dragger1_selected = widget_get_prop_bool(dragger1, "value", false);
+      bool dragger2_selected = widget_get_prop_bool(dragger2, "value", false);
+      printf("range_slider_on_event key: %s dragger1 select: %d dragger2 select: %d\r\n", kvt->name, dragger1_selected, dragger2_selected);
+
+      if(dragger1_selected){
+        if(evt->key == TK_KEY_LEFT){
+          range_slider_dec(widget, kDragger1);
+        }
+        else if(evt->key == TK_KEY_RIGHT){
+          range_slider_inc(widget, kDragger1);
+        }
+      }
+      else if(dragger2_selected){
+        if(evt->key == TK_KEY_LEFT){
+          range_slider_dec(widget, kDragger2);
+        }
+        else if(evt->key == TK_KEY_RIGHT){
+          range_slider_inc(widget, kDragger2);
+        }
+      }
+      break;
+    case EVT_KEY_UP:
+      break;
     default:
       break;
   }
   return RET_OK;
 }
+
+
+
 
 const char* s_range_slider_properties[] = {NULL};
 
@@ -538,7 +750,6 @@ TK_DECL_VTABLE(range_slider) = {.size = sizeof(range_slider_t),
                                 .get_parent_vt = TK_GET_PARENT_VTABLE(widget),
                                 .create = range_slider_create,
                                 .on_paint_self = range_slider_on_paint_self,
-                                .on_paint_border = widget_on_paint_null,
                                 .on_paint_background = widget_on_paint_null,
                                 .set_prop = range_slider_set_prop,
                                 .get_prop = range_slider_get_prop,
@@ -560,12 +771,17 @@ widget_t* range_slider_create(widget_t* parent, xy_t x, xy_t y, wh_t w, wh_t h) 
   range_slider->dragger_adapt_to_icon = TRUE;
   range_slider->no_use_second_dragger = FALSE;
 
-  widget_t* dragger1 = button_create(widget, 0, 0, 0, 0);
-  widget_t* dragger2 = button_create(widget, 0, 0, 0, 0);
+  range_slider->curr_key_state = kRangeSilderFocus_view;
+  widget_t* dragger1 = check_button_create_radio(widget, 0, 0, 0, 0);
+  widget_t* dragger2 = check_button_create_radio(widget, 0, 0, 0, 0);
+
 
   return_value_if_fail(dragger1 != NULL && dragger2 != NULL, RET_BAD_PARAMS);
   widget_set_name(dragger1, RANGE_SLIDER_SUB_WIDGET_DRAGGER1);
   widget_set_name(dragger2, RANGE_SLIDER_SUB_WIDGET_DRAGGER2);
+
+
+
   dragger1->auto_created = TRUE;
   dragger2->auto_created = TRUE;
 

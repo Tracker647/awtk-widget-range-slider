@@ -263,6 +263,32 @@
           "design": true,
           "scriptable": true
         }
+      },
+      {
+        "name": "range_label_visible",
+        "desc": "是否在控件widget左右显示min和max的label，缺省为true",
+        "type": "bool_t",
+        "annotation": {
+          "set_prop": true,
+          "get_prop": true,
+          "readable": true,
+          "persitent": true,
+          "design": true,
+          "scriptable": true
+        }
+      },
+      {
+        "name": "value_label_visible",
+        "desc": "是否在控件widget下方显示value1和value2的label，缺省为true",
+        "type": "bool_t",
+        "annotation": {
+          "set_prop": true,
+          "get_prop": true,
+          "readable": true,
+          "persitent": true,
+          "design": true,
+          "scriptable": true
+        }
       }
     ],
     "header": "range_slider/range_slider.h",
