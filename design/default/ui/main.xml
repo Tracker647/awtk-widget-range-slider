@@ -1,5 +1,13 @@
 <window theme="main" name="main" move_focus_up_key="up" move_focus_down_key="down" move_focus_left_key="left" move_focus_right_key="right">
-  <slider name="slider" x="142" y="78" w="276" h="58" style:normal:bg_color="#A5A5A5" style:normal:border_color="#00000000" style:normal:round_radius="14" style:pressed:round_radius="0" style:over:round_radius="0" style:disable:round_radius="0" style:focused:round_radius="0" style:normal:icon="icons_slider_2" style:pressed:icon="icons_slider_2" style:over:icon="icons_slider_2" style:disable:icon="icons_slider_2" style:focused:icon="icons_slider_2" style:pressed:border_color="#00000000" style:over:border_color="#00000000" style:disable:border_color="#00000000" style:focused:border_color="#00FFFF" bar_size="0" focusable="false" value="40"/>
-  <range_slider x="142" y="171" name="range_slider1" value1="50" value2="90" min="0" max="100" w="276" h="38" step="10" bar_size="6" dragger_style="ocean" no_use_second_dragger="false" dragger_adapt_to_icon="true" dragger_size="0" style="ocean1" style:normal:border_width="0" style:normal:round_radius="5" focusable="true" style:focused:border_color="#00FFFF"/>
-  <radio_button name="radio_button" x="194" y="323" w="39" h="31" style="ocean" text="RadioButton"/>
+  <view name="view" x="179" y="126" w="567" h="226" style:normal:bg_color="#002444">
+    <range_slider x="44" y="51" name="range_slider" value1="50" value2="150" min="1" max="300" w="468" h="24" step="1" bar_size="2" dragger_style="ocean" no_use_second_dragger="false" dragger_adapt_to_icon="true" dragger_size="0" style="ocean" style:normal:border_width="0" style:normal:round_radius="0" focusable="true" value_label_visible="true" range_label_visible="true" value_label_style="ocean" range_label_style="ocean_no_border" sensitive="true"/>
+    <range_slider x="44" y="140" name="range_slider" value1="50" value2="150" min="1" max="300" w="468" h="24" step="1" bar_size="2" dragger_style="ocean" no_use_second_dragger="false" dragger_adapt_to_icon="true" dragger_size="0" style="ocean" style:normal:border_width="0" style:normal:round_radius="0" focusable="true" value_label_visible="true" range_label_visible="true" value_label_style="ocean" range_label_style="ocean_no_border" sensitive="true">
+      <property name="value_label_gap">
+        <![CDATA[0]]>
+      </property>
+      <property name="value_label_width">
+        <![CDATA[50]]>
+      </property>
+    </range_slider>
+  </view>
 </window>
