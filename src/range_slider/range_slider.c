@@ -939,10 +939,10 @@ widget_t* range_slider_create(widget_t* parent, xy_t x, xy_t y, wh_t w, wh_t h) 
   widget_t* widget = widget_create(parent, TK_REF_VTABLE(range_slider), x, y, w, h);
   range_slider_t* range_slider = RANGE_SLIDER(widget);
   return_value_if_fail(range_slider != NULL, RET_BAD_PARAMS);
-  range_slider->min = 0;
-  range_slider->max = 100;
-  range_slider->value1 = 0;
-  range_slider->value2 = 100;
+  range_slider->min = 1;
+  range_slider->max = 300;
+  range_slider->value1 = 50;
+  range_slider->value2 = 150;
   range_slider->no_dragger_icon = FALSE;
   range_slider->dragger1_dragging = FALSE;
   range_slider->dragger2_dragging = FALSE;

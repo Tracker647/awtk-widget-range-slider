@@ -44,7 +44,7 @@ typedef enum {
  *
  * ```xml
  * <!-- ui -->
- *    <range_slider x="44" y="51" name="range_slider" value1="50" value2="150" min="1" max="300" w="468" h="24" step="1" bar_size="2" dragger_style="ocean" no_use_second_dragger="false" dragger_adapt_to_icon="true" dragger_size="0" style="ocean" style:normal:border_width="0" style:normal:round_radius="0" focusable="true" value_label_visible="true" range_label_visible="true" value_label_style="ocean" range_label_style="ocean_no_border" sensitive="true">
+ *    <range_slider x="44" y="51" name="range_slider" value1="50" value2="150" min="1" max="300" w="468" h="24" step="1" bar_size="2" dragger_style="ocean" no_use_second_dragger="false" dragger_adapt_to_icon="true" dragger_size="0" style="ocean" focusable="true" value_label_visible="true" range_label_visible="true" value_label_style="ocean" range_label_style="ocean_no_border" sensitive="true">
     </range_slider>
  * ```
  *
@@ -54,25 +54,24 @@ typedef enum {
  * <!-- style -->
  * <range_slider>
  *   <style name="default">
- *     <normal bg_color="#A5A5A5" border_color="#E7E6E6" fg_color="#338FFF" font_size="32" selected_bg_color="#A5A5A5" selected_fg_color="#00B0F0" text_color="#000000"/>
+ *     <normal bg_color="#A5A5A5" fg_color="#338FFF" font_size="32" selected_bg_color="#A5A5A5" selected_fg_color="#00B0F0" text_color="#000000"/>
  *   </style>
-  * <style name="ocean" bg_color="#00C2FF" border_color="#00000000" fg_color="#4C728E" font_size="32" icon="icons_slider_2" selected_bg_color="#00C2FF" selected_fg_color="#4C728E" text_color="#000000">
+  * <style name="ocean" bg_color="#00C2FF" fg_color="#4C728E" font_size="32" icon="icons_slider_2" selected_bg_color="#00C2FF" selected_fg_color="#4C728E" text_color="#000000">
   *     <normal/>
   *     <focused/>
-  *     <over bg_color="#00E1FF" border_color="#E7E6E6"/>
   *   </style>
  * </range_slider>
  * <radio_button>
- *   <style name="no_dragger" bg_color="#00000000" border_color="#00FFFF" round_radius="4" text_color="#00000000">
- *     <normal border_color="#00000000"/>
+ *   <style name="no_dragger" bg_color="#00000000"  round_radius="4" text_color="#00000000">
+ *     <normal/>
  *     <focused/>
  *     <focused_of_checked/>
  *   </style>
- *   <style name="ocean" bg_color="#00000000" bg_image="icons_slider_3" border_color="#00000000" round_radius="4" text_color="#00000000">
+ *   <style name="ocean" bg_color="#00000000" bg_image="icons_slider_3" round_radius="4" text_color="#00000000">
  *     <normal bg_image="icons_slider_2" icon="" icon_at="auto"/>
  *     <disable_of_checked icon="" icon_at="auto"/>
- *     <focused bg_image="icons_slider_2" border_color="#00FFFF"/>
- *     <focused_of_checked border_color="#00FFFF" icon="" icon_at="auto"/>
+ *     <focused bg_image="icons_slider_2" />
+ *     <focused_of_checked  icon="" icon_at="auto"/>
  *     <normal_of_checked icon="" icon_at="auto"/>
  *     <over_of_checked icon="" icon_at="auto"/>
  *     <pressed/>
