@@ -702,7 +702,7 @@ static ret_t range_slider_parse_key_state(widget_t *widget, key_event_t* evt){
   widget_t *dragger1 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_DRAGGER1);
   widget_t *dragger2 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_DRAGGER2);
   return_value_if_fail(dragger1 != NULL && dragger2 != NULL, RET_BAD_PARAMS);
-
+  ret_t ret = RET_OK;
   switch(range_slider->curr_key_state){
     case kRangeSilderFocus_view:
       if(range_slider->prev_key_state == kRangeSilderFocus_dragger1 || range_slider->prev_key_state == kRangeSilderFocus_dragger2){
@@ -736,6 +736,7 @@ static ret_t range_slider_parse_key_state(widget_t *widget, key_event_t* evt){
       else if(evt->key == TK_KEY_RIGHT){
         range_slider_inc(widget, kDragger1);
       }
+      ret = RET_STOP;
       break;
     case kRangeSilderWillMove_dragger2:
       if(evt->key == TK_KEY_LEFT){
@@ -744,10 +745,12 @@ static ret_t range_slider_parse_key_state(widget_t *widget, key_event_t* evt){
       else if(evt->key == TK_KEY_RIGHT){
         range_slider_inc(widget, kDragger2);
       }
+      ret = RET_STOP;
       break;
     default:
       break;
   }
+  return ret;
 }
 
 static void range_slider_print_key_state(widget_t *widget){
@@ -829,7 +832,7 @@ static ret_t range_slider_on_event(widget_t* widget, event_t* e) {
 
   pointer_event_t* evt = (pointer_event_t*)e;
   point_t p = {evt->x, evt->y};
-
+  ret_t ret = RET_OK;
   switch (e->type) {
     case EVT_POINTER_DOWN: {
       rect_t *dr1 = (rect_t*)dragger1, *dr2 = (rect_t*)dragger2;
@@ -838,12 +841,13 @@ static ret_t range_slider_on_event(widget_t* widget, event_t* e) {
         range_slider_dispatch_value_change_event(widget, EVT_VALUE1_WILL_CHANGE, kDragger1, 0);
         range_slider->dragger1_dragging = TRUE;
         range_slider->dragger2_dragging = FALSE;
+        widget_grab(widget, dragger1);
       } else if (rect_contains(dr2, p.x, p.y)) {
         range_slider_dispatch_value_change_event(widget, EVT_VALUE2_WILL_CHANGE, kDragger2, 0);
         range_slider->dragger2_dragging = TRUE;
         range_slider->dragger1_dragging = FALSE;
+        widget_grab(widget, dragger2);
       }
-      widget_grab(widget->parent, widget);
       break;
     }
     case EVT_POINTER_MOVE: {
@@ -861,48 +865,46 @@ static ret_t range_slider_on_event(widget_t* widget, event_t* e) {
         range_slider->dragger1_dragging = FALSE;
         range_slider_change_value_by_pointer_event(widget, evt, kDragger1);
         range_slider_dispatch_value_change_event(widget, EVT_VALUE1_CHANGED, kDragger1, 0);
+        widget_ungrab(widget, dragger1);
       } else if (range_slider->dragger2_dragging) {
         range_slider->dragger2_dragging = FALSE;
         range_slider_change_value_by_pointer_event(widget, evt, kDragger2);
         range_slider_dispatch_value_change_event(widget, EVT_VALUE2_CHANGED, kDragger2, 0);
+        widget_ungrab(widget, dragger2);
       }
-      widget_ungrab(widget->parent, widget);
-      widget_set_state(widget, WIDGET_STATE_NORMAL);
       widget_set_prop_bool(dragger1, "value", FALSE);
       widget_set_prop_bool(dragger2, "value", FALSE);
       break;
     }
     case EVT_POINTER_DOWN_ABORT:
       break;
-    case EVT_POINTER_LEAVE:
-      widget_set_state(widget, WIDGET_STATE_NORMAL);
-      break;
-    case EVT_POINTER_ENTER:
-      widget_set_state(widget, WIDGET_STATE_OVER);
-      break;
-    // case EVT_KEY_DOWN: 
-    //   key_event_t *evt = (key_event_t*)e;
-    //   const key_type_value_t *kvt = keys_type_find_by_value(evt->key);
-    //   bool dragger1_selected = widget_get_prop_bool(dragger1, "value", false);
-    //   bool dragger2_selected = widget_get_prop_bool(dragger2, "value", false);
+    case EVT_KEY_DOWN: 
+      key_event_t *evt = (key_event_t*)e;
+      const key_type_value_t *kvt = keys_type_find_by_value(evt->key);
+      bool dragger1_focused = widget_get_prop_bool(dragger1, "focused", false);
+      bool dragger2_focused = widget_get_prop_bool(dragger2, "focused", false);
 
-    //   if(dragger1_selected){
-    //     if(evt->key == TK_KEY_LEFT){
-    //       range_slider_dec(widget, kDragger1);
-    //     }
-    //     else if(evt->key == TK_KEY_RIGHT){
-    //       range_slider_inc(widget, kDragger1);
-    //     }
-    //   }
-    //   else if(dragger2_selected){
-    //     if(evt->key == TK_KEY_LEFT){
-    //       range_slider_dec(widget, kDragger2);
-    //     }
-    //     else if(evt->key == TK_KEY_RIGHT){
-    //       range_slider_inc(widget, kDragger2);
-    //     }
-    //   }
-    //   break;
+      if(dragger1_focused){
+        if(evt->key == TK_KEY_LEFT){
+          range_slider_dec(widget, kDragger1);
+          ret = RET_STOP; //用于阻止后继的焦点切换操作，确保按键控制正常执行， 下面ret = RET_STOP同理
+        }
+        else if(evt->key == TK_KEY_RIGHT){
+          range_slider_inc(widget, kDragger1);
+          ret = RET_STOP;
+        }
+      }
+      else if(dragger2_focused){
+        if(evt->key == TK_KEY_LEFT){
+          range_slider_dec(widget, kDragger2);
+          ret = RET_STOP;
+        }
+        else if(evt->key == TK_KEY_RIGHT){
+          range_slider_inc(widget, kDragger2);
+          ret = RET_STOP;
+        }
+      }
+      break;
     case EVT_KEY_UP:
       break;
     default:

@@ -12,14 +12,6 @@
     <over icon="arrow_down_o"/>
     <pressed icon="arrow_down_p"/>
   </style>
-  <style name="no_dragger">
-    <normal bg_color="#00000000" border_color="#00000000" round_radius="4" text_color="#00000000"/>
-  </style>
-  <style name="ocean" bg_color="#00000000" bg_image="icons_slider_2" border_color="#00000000" round_radius="4" text_color="#00000000">
-    <normal icon="" icon_at="auto"/>
-    <focused border_color="#00FFFF"/>
-    <pressed bg_image="icons_slider_3"/>
-  </style>
   <style name="scroll_down" bg_color="#F2F2F2">
     <normal icon="arrow_down_n"/>
     <disable bg_color="#F2F2F266" border_color="#C2C2C266" icon="arrow_down_d"/>
@@ -299,6 +291,16 @@
     <pressed/>
     <pressed_of_checked icon="" icon_at="auto"/>
   </style>
+  <style name="ocean_with_focus" bg_color="#00000000" bg_image="icons_slider_3" border_color="#00000000" round_radius="4" text_color="#00000000">
+    <normal bg_image="icons_slider_2" icon="" icon_at="auto"/>
+    <disable_of_checked icon="" icon_at="auto"/>
+    <focused bg_image="icons_slider_2" border_color="#00FFFF"/>
+    <focused_of_checked border_color="#00FFFF" icon="" icon_at="auto"/>
+    <normal_of_checked icon="" icon_at="auto"/>
+    <over_of_checked icon="" icon_at="auto"/>
+    <pressed/>
+    <pressed_of_checked icon="" icon_at="auto"/>
+  </style>
 </radio_button>
 <range_slider>
   <style name="default" bg_color="#A5A5A5" fg_color="#338FFF" font_size="32" selected_bg_color="#A5A5A5" selected_fg_color="#00B0F0" text_color="#000000">
@@ -307,6 +309,11 @@
   </style>
   <style name="ocean" border_color="#00000000" fg_color="#4C728E" font_size="32" icon="icons_slider_2" selected_bg_color="#00C2FF" selected_fg_color="#4C728E" text_color="#000000">
     <normal bg_color="#00C2FF"/>
+    <over bg_color="#00E1FF"/>
+  </style>
+  <style name="ocean_with_focused" border_color="#00000000" fg_color="#4C728E" font_size="32" icon="icons_slider_2" selected_bg_color="#00C2FF" selected_fg_color="#4C728E" text_color="#000000">
+    <normal bg_color="#00C2FF"/>
+    <focused border_color="#00FFFF"/>
     <over bg_color="#00E1FF"/>
   </style>
 </range_slider>

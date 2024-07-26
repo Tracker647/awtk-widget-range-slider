@@ -1,5 +1,14 @@
-<window theme="main" name="main" move_focus_up_key="up" move_focus_down_key="down" move_focus_left_key="left" move_focus_right_key="right">
-  <view name="view" x="109" y="49" w="567" h="319" style:normal:bg_color="#002444"/>
-  <range_slider x="158" y="111" name="range_slider" value1="50" value2="150" min="1" max="300" w="468" h="24" step="1" bar_size="2" dragger_style="ocean" no_use_second_dragger="false" dragger_adapt_to_icon="true" dragger_size="0" style="ocean" focusable="true" value_label_visible="true" range_label_visible="true" value_label_style="ocean" range_label_style="ocean_no_border" sensitive="true"/>
-  <range_slider x="158" y="196" name="range_slider" value1="50" value2="150" min="1" max="300" w="468" h="24" step="1" bar_size="2" dragger_style="ocean" no_use_second_dragger="false" dragger_adapt_to_icon="true" dragger_size="0" style="ocean" focusable="true" value_label_visible="true" range_label_visible="true" value_label_style="ocean" range_label_style="ocean_no_border" sensitive="true"/>
+<window theme="main" name="main">
+  <view name="view" x="109" y="49" w="567" h="319" style:normal:bg_color="#002444" children_layout="default(c=1,r=5)" focusable="false" style:focused:border_color="#00FFFF">
+    <view name="view1" focusable="true" style:focused:border_color="#00FFFF">
+      <view name="view2" x="17" y="22" w="505" h="41" focusable="true" style:focused:border_color="#00FFFF">
+        <slider name="slider" x="13" y="14" w="214" h="16" value="40"/>
+        <slider name="slider1" x="277" y="14" w="214" h="16" value="40"/>
+      </view>
+    </view>
+    <view name="view1" style:focused:border_color="#00FFFF" focusable="true">
+      <range_slider x="28" y="10" name="range_slider" value1="50" value2="150" min="1" max="300" w="468" h="24" step="1" bar_size="2" dragger_style="ocean_with_focus" no_use_second_dragger="false" dragger_adapt_to_icon="true" dragger_size="0" style="ocean" focusable="true" value_label_visible="true" range_label_visible="true" value_label_style="ocean" range_label_style="ocean_no_border" sensitive="true" style:focused:border_color="#00FFFF"/>
+    </view>
+    <view name="view2"/>
+  </view>
 </window>
