@@ -1,14 +1,14 @@
-<window theme="main" name="main">
-  <view name="view" x="109" y="49" w="567" h="319" style:normal:bg_color="#002444" children_layout="default(c=1,r=5)" focusable="false" style:focused:border_color="#00FFFF">
-    <view name="view1" focusable="true" style:focused:border_color="#00FFFF">
-      <view name="view2" x="17" y="22" w="505" h="41" focusable="true" style:focused:border_color="#00FFFF">
-        <slider name="slider" x="13" y="14" w="214" h="16" value="40"/>
-        <slider name="slider1" x="277" y="14" w="214" h="16" value="40"/>
-      </view>
+<window name="button_test" style:normal:bg_color="#1E3864" move_focus_up_key="up" move_focus_down_key="down" move_focus_left_key="left" move_focus_right_key="right" move_focus_as_tree_enable="true" move_focus_children_key="RETURN" move_focus_parent_key="ESCAPE">
+  <view name="setting_container" x="50" y="111" w="610" h="278" style:normal:bg_color="#002444" style:normal:round_radius="5" style:focused:border_color="#4ADDD5" style:focused:round_radius="5" children_layout="default(c=1,r=3)">
+    <view name="view" style:focused:border_color="#00FFFF" focusable="true"/>
+    <view name="view" children_layout="default(c=3,r=1)" style:focused:border_color="#00FFFF" focusable="true">
+      <radio_button focused="true" name="radio_button" style:focused:border_color="#00FFFF" style:focused_of_checked:border_color="#00FFFF" focusable="true" text="RadioButton"/>
+      <radio_button name="radio_button" style:focused:border_color="#00FFFF" style:focused_of_checked:border_color="#00FFFF" focusable="true" text="RadioButton"/>
+      <radio_button name="radio_button" style:focused:border_color="#00FFFF" style:focused_of_checked:border_color="#00FFFF" focusable="true" text="RadioButton"/>
     </view>
-    <view name="view1" style:focused:border_color="#00FFFF" focusable="true">
-      <range_slider x="28" y="10" name="range_slider" value1="50" value2="150" min="1" max="300" w="468" h="24" step="1" bar_size="2" dragger_style="ocean_with_focus" no_use_second_dragger="false" dragger_adapt_to_icon="true" dragger_size="0" style="ocean" focusable="true" value_label_visible="true" range_label_visible="true" value_label_style="ocean" range_label_style="ocean_no_border" sensitive="true" style:focused:border_color="#00FFFF"/>
+    <view name="view" style:focused:border_color="#00FFFF" focusable="true">
+      <slider name="slider" x="45" y="10" w="495" h="16" focusable="true" style:focused:border_color="#00FFFF" value="40"/>
+      <range_slider name="range_slider" focusable="true" value2="150" value1="50" max="300" min="1"  step="1" bar_size="2" dragger_style="ocean" no_use_second_dragger="false" dragger_adapt_to_icon="true" dragger_size="0" style="ocean"  value_label_visible="true" range_label_visible="true" value_label_style="ocean" range_label_style="ocean_no_border" sensitive="true" style:focused:border_color="#00FFFF" disg:custom="container" x="45" y="36" w="509" h="26"/>
     </view>
-    <view name="view2"/>
   </view>
 </window>

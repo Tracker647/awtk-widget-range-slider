@@ -13,6 +13,9 @@ git clone https://github.com/zlgopen/awtk.git
 cd awtk; scons; cd -
 ```
 
+将自定义控件design/default/images/xx/下所有图片复制到项目的同名路径
+将自定义控件design/default/styles/main.xml下规定的所有样式拷贝到项目的design/default/styles/default.xml
+（为什么awtk_designer不能自动把这些搬过来？）
 ## 运行
 
 1. 生成示例代码的资源

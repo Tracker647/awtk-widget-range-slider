@@ -7,11 +7,12 @@ def getAwtkRoot():
     return AWTK_ROOT
 
 def getAwtkSDKPath():
-    env = os.environ
-    if 'AWTK_SDK_PATH' in env:
-        return env['AWTK_SDK_PATH']
-    else:
-        return ''
+    # env = os.environ
+    # if 'AWTK_SDK_PATH' in env:
+    #     return env['AWTK_SDK_PATH']
+    # else:
+    #     return ''
+    return 'D:/Devtools/'
 
 def locateAWTK(awtk):
     awtk_root = ''

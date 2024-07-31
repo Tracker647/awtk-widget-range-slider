@@ -79,10 +79,17 @@ typedef enum {
  *   </style>
  * </radio_button>
  * <label>
- *   <style name="ocean">
- *     <normal border_color="#000000" text_color="#444444"/>
- *   </style>
- * </label>
+    <style name="default">
+      <normal text_color="#444444"/>
+      <disable text_color="#44444466"/>
+    </style>
+    <style name="ocean">
+      <normal border_color="#113554" text_color="#FFFFFF"/>
+    </style>
+    <style name="ocean_no_border">
+      <normal text_color="#527894"/>
+    </style>
+  </label>
  * ```
  */
 typedef struct _range_slider_t {
@@ -139,14 +146,14 @@ typedef struct _range_slider_t {
    * @annotation ["set_prop","get_prop","readable","persitent","design","scriptable"]
    * 渲染dragger的style名称, 目前使用radio_button的style, 默认为default, 可通过自定义radio_button的style来定制。
    */
-  char* dragger_style;
+  const char* dragger_style;
 
   /**
    * @property {char*} range_label_style
    * @annotation ["set_prop","get_prop","readable","persitent","design","scriptable"]
    * 设置标识min和max的label的样式, 默认为default, 注意：text_align_h样式默认定死为right和left,无法修改。
    */
-  char* range_label_style;
+  const char* range_label_style;
 
   
   /**
@@ -154,7 +161,7 @@ typedef struct _range_slider_t {
    * @annotation ["set_prop","get_prop","readable","persitent","design","scriptable"]
    * 设置标识value1和value2的label的样式, 默认为default
    */
-  char* value_label_style;
+  const char* value_label_style;
 
 
   /**
@@ -215,6 +222,12 @@ typedef struct _range_slider_t {
    * 标识value1和value2的label与上方range_slider的间距，默认为0
    */
   uint32_t value_label_gap;
+  /**
+   * @property {bool_t} range_slider_focusable
+   * @annotation ["set_prop","get_prop","readable","persitent","design","scriptable"]
+   * 是否允许控件range_slider获得焦点，由于某些原因widget的focusable无法得到预想的效果，因此focusable应以这个为准，缺省为false
+   */
+  bool_t range_slider_focusable;
 
   /* private */
   enFocusState prev_key_state; 
@@ -274,6 +287,8 @@ typedef struct _range_slider_t {
 #define RANGE_SLIDER_PROP_VALUE_LABEL_VISIBLE "value_label_visible"
 #define RANGE_SLIDER_PROP_RANGE_LABEL_STYLE "range_label_style"
 #define RANGE_SLIDER_PROP_VALUE_LABEL_STYLE "value_label_style"
+#define RANGE_SLIDER_PROP_FOCUSABLE "range_slider_focusable"
+
 
 #define RANGE_SLIDER_SUB_WIDGET_DRAGGER1 "dragger1"
 #define RANGE_SLIDER_SUB_WIDGET_DRAGGER2 "dragger2"

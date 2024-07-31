@@ -193,8 +193,9 @@
     <normal text_color="#444444"/>
     <disable text_color="#44444466"/>
   </style>
-  <style name="ocean">
-    <normal border_color="#113554" text_color="#FFFFFF"/>
+  <style name="ocean" text_color="#FFFFFF">
+    <normal border_color="#113554"/>
+    <focused border_color="#00FFFF"/>
   </style>
   <style name="ocean_no_border">
     <normal text_color="#527894"/>
@@ -299,7 +300,7 @@
     <normal_of_checked icon="" icon_at="auto"/>
     <over_of_checked icon="" icon_at="auto"/>
     <pressed/>
-    <pressed_of_checked icon="" icon_at="auto"/>
+    <pressed_of_checked border_color="#00FFFF" icon="" icon_at="auto"/>
   </style>
 </radio_button>
 <range_slider>

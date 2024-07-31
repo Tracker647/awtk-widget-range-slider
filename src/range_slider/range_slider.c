@@ -30,17 +30,21 @@
 #include <stdbool.h>
 #include <string.h>
 
-#define DEBUG_RANGE_SLIDER(_slider_, fmt, ...)                         \
-  printf("range_slider %s(%#x) |> ", _slider_->widget.name, _slider_); \
-  printf(fmt, ##__VA_ARGS__);                                          \
-  printf("\r\n");
 
 typedef enum {
   kDragger1 = 0,
   kDragger2 = 1,
 } dragger_index;
 
-
+#define RANGE_SLIDER_ALL_WIDGET_INIT()   \
+  range_slider_t* range_slider = RANGE_SLIDER(widget); \
+  return_value_if_fail(range_slider != NULL, RET_BAD_PARAMS); \
+  widget_t *dragger1 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_DRAGGER1); \
+  widget_t *dragger2 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_DRAGGER2); \
+  return_value_if_fail(dragger1 != NULL && dragger2 != NULL, RET_BAD_PARAMS); \
+  widget_t *label_value1 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_LABEL_VALUE1); \
+  widget_t *label_value2 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_LABEL_VALUE2); \
+  return_value_if_fail(label_value1 != NULL && label_value2 != NULL, RET_BAD_PARAMS) 
 
 static ret_t range_slider_load_bg_image(widget_t* widget, bitmap_t* img) {
   style_t* style = widget->astyle;
@@ -62,10 +66,6 @@ static uint32_t range_slider_get_bar_size(widget_t* widget) {
 static ret_t range_slider_invalidate(widget_t *widget) {
   range_slider_t* range_slider = RANGE_SLIDER(widget);
   return_value_if_fail(widget != NULL && range_slider != NULL, RET_BAD_PARAMS);
-  widget_t *label_min = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_LABEL_MIN);
-  widget_t *label_max = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_LABEL_MAX);
-  widget_t *label_value1 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_LABEL_VALUE1);
-  widget_t *label_value2 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_LABEL_VALUE2);
   //label是在widget外面的，得一起算进canvas
   rect_t canvas = {
     .x = -range_slider->range_label_width - range_slider->range_label_gap,
@@ -73,7 +73,7 @@ static ret_t range_slider_invalidate(widget_t *widget) {
     .w = widget->w + (range_slider->range_label_width + range_slider->range_label_gap) * 2, 
     .h = widget->h + range_slider->value_label_height + range_slider->value_label_gap
   };
-  return widget_invalidate(range_slider, &canvas);
+  return widget_invalidate(widget, &canvas);
 }
 
 static ret_t range_slider_set_bar_size(widget_t* widget, uint32_t bar_size) {
@@ -128,8 +128,8 @@ static ret_t range_slider_set_range_label_style(widget_t* widget, const char* st
 static ret_t range_slider_set_value_label_style(widget_t* widget, const char* style) {
   range_slider_t* range_slider = RANGE_SLIDER(widget);
   return_value_if_fail(range_slider != NULL, RET_BAD_PARAMS);
-  widget_t *label_value1 = widget_lookup(widget, RANGE_SLIDER_SUB_WIDGET_LABEL_VALUE1, TRUE);
-  widget_t *label_value2 = widget_lookup(widget, RANGE_SLIDER_SUB_WIDGET_LABEL_VALUE2, TRUE);
+  widget_t *label_value1 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_LABEL_VALUE1);
+  widget_t *label_value2 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_LABEL_VALUE2);
   return_value_if_fail(label_value1 != NULL && label_value2 != NULL, RET_BAD_PARAMS);
   range_slider->value_label_style = style;
   widget_use_style(label_value1, style);
@@ -349,10 +349,21 @@ static ret_t range_slider_set_value_label_visible(widget_t* widget, bool_t visib
   return range_slider_invalidate(widget);
 }
 
+static ret_t range_slider_set_focusable(widget_t* widget, bool_t focusable)
+{
+  range_slider_t* range_slider = RANGE_SLIDER(widget);
+  return_value_if_fail(range_slider != NULL, RET_BAD_PARAMS);
+  widget_t *dragger1 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_DRAGGER1);
+  widget_t *dragger2 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_DRAGGER2);
+  return_value_if_fail(dragger1 != NULL && dragger2 != NULL, RET_BAD_PARAMS);
+  widget_set_focusable(range_slider, focusable);
+  widget_set_focusable(dragger1, focusable);
+  widget_set_focusable(dragger2, focusable);
+}
+
 static ret_t range_slider_get_prop(widget_t* widget, const char* name, value_t* v) {
   range_slider_t* range_slider = RANGE_SLIDER(widget);
   return_value_if_fail(range_slider != NULL && name != NULL && v != NULL, RET_BAD_PARAMS);
-
   if (tk_str_eq(name, WIDGET_PROP_MIN)) {
     value_set_double(v, range_slider->min);
     return RET_OK;
@@ -361,9 +372,6 @@ static ret_t range_slider_get_prop(widget_t* widget, const char* name, value_t* 
     return RET_OK;
   } else if (tk_str_eq(name, WIDGET_PROP_STEP)) {
     value_set_double(v, range_slider->step);
-    return RET_OK;
-  } else if(tk_str_eq(name, WIDGET_PROP_FOCUSABLE)) {
-    value_set_bool(v, range_slider->widget.focusable);
     return RET_OK;
   } else if (tk_str_eq(name, RANGE_SLIDER_PROP_VALUE1)) {
     value_set_double(v, range_slider->value1);
@@ -413,8 +421,10 @@ static ret_t range_slider_get_prop(widget_t* widget, const char* name, value_t* 
   } else if(tk_str_eq(name, RANGE_SLIDER_SUB_WIDGET_VALUE_LABEL_GAP)) {
     value_set_uint32(v, range_slider->value_label_gap);
     return RET_OK;
+  } else if(tk_str_eq(name, RANGE_SLIDER_PROP_FOCUSABLE)){
+    value_set_bool(v, range_slider->range_slider_focusable);
+    return RET_OK;
   }
-
   return RET_NOT_FOUND;
 }
 
@@ -425,16 +435,11 @@ static ret_t range_slider_set_prop(widget_t* widget, const char* name, const val
   widget_t *dragger1 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_DRAGGER1);
   widget_t *dragger2 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_DRAGGER2);
   return_value_if_fail(dragger1 != NULL && dragger2 != NULL, RET_BAD_PARAMS);
-
   if (tk_str_eq(name, WIDGET_PROP_MIN)) {
     range_slider->min = value_double(v);
     return RET_OK;
   } else if (tk_str_eq(name, WIDGET_PROP_MAX)) {
     range_slider->max = value_double(v);
-    return RET_OK;
-  } else if(tk_str_eq(name, WIDGET_PROP_FOCUSABLE)) {
-    widget_set_focusable(dragger1, value_bool(v));
-    widget_set_focusable(dragger2, value_bool(v));
     return RET_OK;
   } else if (tk_str_eq(name, WIDGET_PROP_STEP)) {
     range_slider->step = value_double(v);
@@ -480,9 +485,35 @@ static ret_t range_slider_set_prop(widget_t* widget, const char* name, const val
   } else if(tk_str_eq(name, RANGE_SLIDER_SUB_WIDGET_VALUE_LABEL_GAP)) {
     range_slider->value_label_gap = value_uint32(v);
     return RET_OK;
+  } else if(tk_str_eq(name, RANGE_SLIDER_PROP_FOCUSABLE)){
+    bool_t flag = value_bool(v);
+    range_slider->range_slider_focusable = flag;
+    range_slider_set_focusable(widget, flag);
+    return RET_OK;
   }
 
   return RET_NOT_FOUND;
+}
+
+static ret_t on_dragger_key_down(void *ctx, event_t* e)
+{
+  range_slider_t* range_slider = RANGE_SLIDER(ctx);
+  return_value_if_fail(ctx != NULL && e != NULL && e->target != NULL, RET_BAD_PARAMS);
+  widget_t *dragger = WIDGET(e->target);
+  return_value_if_fail(dragger != NULL, RET_BAD_PARAMS);
+  bool dragger_selected = widget_get_prop_bool(dragger, "value", false);
+
+  key_event_t *evt = (key_event_t*)e;
+  ret_t ret = RET_OK;
+  /* 按钮enter默认不会冒泡到父控件，需手动处理 */
+  widget_dispatch((widget_t*)range_slider, e);
+  if(dragger_selected && (evt->key == TK_KEY_LEFT || evt->key == TK_KEY_RIGHT)){
+    ret = RET_STOP; //用于阻止后继的焦点切换操作
+  }
+  if(dragger_selected && evt->key == TK_KEY_ESCAPE){
+    ret = RET_STOP;
+  } 
+  return ret;
 }
 
 static ret_t range_slider_on_destroy(widget_t* widget) {
@@ -671,7 +702,6 @@ static ret_t range_slider_on_paint_self(widget_t* widget, canvas_t* c) {
 }
 
 
-
 static ret_t range_slider_change_value_by_pointer_event(widget_t* widget, pointer_event_t* evt,
                                                         dragger_index dr_idx) {
   range_slider_t* range_slider = RANGE_SLIDER(widget);
@@ -696,139 +726,14 @@ static ret_t range_slider_change_value_by_pointer_event(widget_t* widget, pointe
   
 }
 
-static ret_t range_slider_parse_key_state(widget_t *widget, key_event_t* evt){
-  range_slider_t* range_slider = RANGE_SLIDER(widget);
-  return_value_if_fail(widget != NULL && range_slider != NULL, RET_BAD_PARAMS);
-  widget_t *dragger1 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_DRAGGER1);
-  widget_t *dragger2 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_DRAGGER2);
-  return_value_if_fail(dragger1 != NULL && dragger2 != NULL, RET_BAD_PARAMS);
-  ret_t ret = RET_OK;
-  switch(range_slider->curr_key_state){
-    case kRangeSilderFocus_view:
-      if(range_slider->prev_key_state == kRangeSilderFocus_dragger1 || range_slider->prev_key_state == kRangeSilderFocus_dragger2){
-        widget_set_focused((widget_t*)dragger1, FALSE);
-        widget_set_focused((widget_t*)dragger2, FALSE);
-      }
-      widget_set_focused(widget, TRUE);
-      break;
-    case kRangeSilderFocus_dragger1:
-      if(range_slider->prev_key_state == kRangeSilderFocus_view){
-        widget_set_focused((widget_t*)range_slider, FALSE);
-      }
-      if(range_slider->prev_key_state == kRangeSilderFocus_dragger2){
-        widget_set_focused((widget_t*)dragger2, FALSE);
-      }
-      widget_set_focused((widget_t*)dragger1, TRUE);
-      break;
-    case kRangeSilderFocus_dragger2:
-      if(range_slider->prev_key_state == kRangeSilderFocus_view){
-        widget_set_focused((widget_t*)range_slider, FALSE);
-      }
-      if(range_slider->prev_key_state == kRangeSilderFocus_dragger1){
-        widget_set_focused((widget_t*)dragger1, FALSE);
-      }
-      widget_set_focused((widget_t*)dragger2, TRUE);
-      break;
-    case kRangeSilderWillMove_dragger1:
-      if(evt->key == TK_KEY_LEFT){
-        range_slider_dec(widget, kDragger1);
-      }
-      else if(evt->key == TK_KEY_RIGHT){
-        range_slider_inc(widget, kDragger1);
-      }
-      ret = RET_STOP;
-      break;
-    case kRangeSilderWillMove_dragger2:
-      if(evt->key == TK_KEY_LEFT){
-        range_slider_dec(widget, kDragger2);
-      }
-      else if(evt->key == TK_KEY_RIGHT){
-        range_slider_inc(widget, kDragger2);
-      }
-      ret = RET_STOP;
-      break;
-    default:
-      break;
-  }
-  return ret;
-}
-
-static void range_slider_print_key_state(widget_t *widget){
-  range_slider_t* range_slider = RANGE_SLIDER(widget);
-  return_value_if_fail(widget != NULL && range_slider != NULL, RET_BAD_PARAMS);
-
-  const char* mes[] = {
-    "kRangeSilderFocus_view",
-    "kRangeSilderFocus_dragger1",
-    "kRangeSilderFocus_dragger2",
-    "kRangeSilderWillMove_dragger1",
-    "kRangeSilderWillMove_dragger2"
-  };
-
-  DEBUG_RANGE_SLIDER(range_slider, "range_slider->curr_key_state = %s", mes[range_slider->curr_key_state])
-}
-
-static ret_t range_slider_deal_key(widget_t *widget, key_event_t* evt){
-  range_slider_t* range_slider = RANGE_SLIDER(widget);
-  return_value_if_fail(widget != NULL && range_slider != NULL, RET_BAD_PARAMS);
-
-  range_slider->prev_key_state = range_slider->curr_key_state;
-  const key_type_value_t *ktv = keys_type_find_by_value(evt->key);
-  switch(evt->key){
-    case TK_KEY_RETURN:
-      if(range_slider->curr_key_state == kRangeSilderFocus_view){
-        range_slider->curr_key_state = kRangeSilderFocus_dragger1;
-      }
-      else if(range_slider->curr_key_state == kRangeSilderFocus_dragger1){
-        range_slider->curr_key_state = kRangeSilderWillMove_dragger1;
-      }
-      else if(range_slider->curr_key_state == kRangeSilderFocus_dragger2){
-        range_slider->curr_key_state = kRangeSilderWillMove_dragger2;
-      }
-      break;
-    case TK_KEY_ESCAPE:
-      if(range_slider->curr_key_state == kRangeSilderWillMove_dragger1){
-        range_slider->curr_key_state = kRangeSilderFocus_dragger1;
-      }
-      else if(range_slider->curr_key_state == kRangeSilderWillMove_dragger2){
-        range_slider->curr_key_state = kRangeSilderFocus_dragger2;
-      }
-      else if(range_slider->curr_key_state == kRangeSilderFocus_dragger1 || range_slider->curr_key_state == kRangeSilderFocus_dragger2){
-        range_slider->curr_key_state = kRangeSilderFocus_view;
-      }
-      break;
-    case TK_KEY_LEFT:
-      if(range_slider->curr_key_state == kRangeSilderFocus_dragger2){
-        range_slider->curr_key_state = kRangeSilderFocus_dragger1;
-      }
-      else if(range_slider->curr_key_state == kRangeSilderWillMove_dragger1){
-      }
-      else if(range_slider->curr_key_state == kRangeSilderWillMove_dragger2){
-      }
-      break;
-    case TK_KEY_RIGHT:
-      if(range_slider->curr_key_state == kRangeSilderFocus_dragger1){
-        range_slider->curr_key_state = kRangeSilderFocus_dragger2;
-      }
-      else if(range_slider->curr_key_state == kRangeSilderWillMove_dragger1){
-      }
-      else if(range_slider->curr_key_state == kRangeSilderWillMove_dragger2){
-      }
-      break;
-    default:
-      return RET_FAIL;
-  }
-  range_slider_print_key_state(range_slider);
-  return range_slider_parse_key_state(range_slider,evt);
-}
 
 
 static ret_t range_slider_on_event(widget_t* widget, event_t* e) {
-  range_slider_t* range_slider = RANGE_SLIDER(widget);
-  return_value_if_fail(widget != NULL && range_slider != NULL, RET_BAD_PARAMS);
-  widget_t *dragger1 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_DRAGGER1);
-  widget_t *dragger2 = widget_child(widget, RANGE_SLIDER_SUB_WIDGET_DRAGGER2);
-  return_value_if_fail(dragger1 != NULL && dragger2 != NULL, RET_BAD_PARAMS);
+  RANGE_SLIDER_ALL_WIDGET_INIT();
+  if(!(dragger1 != NULL && dragger2 != NULL)){
+    /* 子控件还未初始化完毕，先返回 */
+    return RET_BAD_PARAMS;
+  }
 
   pointer_event_t* evt = (pointer_event_t*)e;
   point_t p = {evt->x, evt->y};
@@ -859,7 +764,6 @@ static ret_t range_slider_on_event(widget_t* widget, event_t* e) {
       break;
     }
     case EVT_POINTER_UP: {
-      double value = 0;
       pointer_event_t* evt = (pointer_event_t*)e;
       if (range_slider->dragger1_dragging) {
         range_slider->dragger1_dragging = FALSE;
@@ -881,10 +785,10 @@ static ret_t range_slider_on_event(widget_t* widget, event_t* e) {
     case EVT_KEY_DOWN: 
       key_event_t *evt = (key_event_t*)e;
       const key_type_value_t *kvt = keys_type_find_by_value(evt->key);
-      bool dragger1_focused = widget_get_prop_bool(dragger1, "focused", false);
-      bool dragger2_focused = widget_get_prop_bool(dragger2, "focused", false);
+      bool dragger1_selected = widget_get_prop_bool(dragger1, "value", false);
+      bool dragger2_selected = widget_get_prop_bool(dragger2, "value", false);
 
-      if(dragger1_focused){
+      if(dragger1_selected){
         if(evt->key == TK_KEY_LEFT){
           range_slider_dec(widget, kDragger1);
           ret = RET_STOP; //用于阻止后继的焦点切换操作，确保按键控制正常执行， 下面ret = RET_STOP同理
@@ -893,8 +797,11 @@ static ret_t range_slider_on_event(widget_t* widget, event_t* e) {
           range_slider_inc(widget, kDragger1);
           ret = RET_STOP;
         }
+        else if(evt->key == TK_KEY_ESCAPE){ 
+          widget_set_prop_bool(dragger1, "value", false);
+        }
       }
-      else if(dragger2_focused){
+      else if(dragger2_selected){
         if(evt->key == TK_KEY_LEFT){
           range_slider_dec(widget, kDragger2);
           ret = RET_STOP;
@@ -903,6 +810,9 @@ static ret_t range_slider_on_event(widget_t* widget, event_t* e) {
           range_slider_inc(widget, kDragger2);
           ret = RET_STOP;
         }
+        else if(evt->key == TK_KEY_ESCAPE){
+          widget_set_prop_bool(dragger2, "value", false);
+        }
       }
       break;
     case EVT_KEY_UP:
@@ -910,7 +820,7 @@ static ret_t range_slider_on_event(widget_t* widget, event_t* e) {
     default:
       break;
   }
-  return RET_OK;
+  return ret;
 }
 
 static ret_t range_slider_on_layout_children(widget_t* widget) {
@@ -919,6 +829,7 @@ static ret_t range_slider_on_layout_children(widget_t* widget) {
                        RET_BAD_PARAMS);
   return range_slider_update_label(widget, &fr1, &fr2);
 }
+
 
 
 const char* s_range_slider_properties[] = {NULL};
@@ -940,7 +851,7 @@ TK_DECL_VTABLE(range_slider) = {.size = sizeof(range_slider_t),
 widget_t* range_slider_create(widget_t* parent, xy_t x, xy_t y, wh_t w, wh_t h) {
   widget_t* widget = widget_create(parent, TK_REF_VTABLE(range_slider), x, y, w, h);
   range_slider_t* range_slider = RANGE_SLIDER(widget);
-  return_value_if_fail(range_slider != NULL, RET_BAD_PARAMS);
+  return_value_if_fail(range_slider != NULL, NULL);
   range_slider->min = 1;
   range_slider->max = 300;
   range_slider->value1 = 50;
@@ -953,17 +864,16 @@ widget_t* range_slider_create(widget_t* parent, xy_t x, xy_t y, wh_t w, wh_t h) 
   range_slider->no_use_second_dragger = FALSE;
   range_slider->range_label_visible = TRUE;
   range_slider->value_label_visible = TRUE;
-
   range_slider->curr_key_state = kRangeSilderFocus_view;
   widget_t* dragger1 = check_button_create_radio(widget, 0, 0, 0, 0);
   widget_t* dragger2 = check_button_create_radio(widget, 0, 0, 0, 0);
-  return_value_if_fail(dragger1 != NULL && dragger2 != NULL, RET_BAD_PARAMS);
+  return_value_if_fail(dragger1 != NULL && dragger2 != NULL, NULL);
 
   widget_t* label_min = label_create(widget, 0, 0, 0, 0);
   widget_t* label_max = label_create(widget, 0, 0, 0, 0);
   widget_t* label_value1 = label_create(widget, 0, 0, 0, 0);
   widget_t* label_value2 = label_create(widget, 0, 0, 0, 0);
-  return_value_if_fail(label_min != NULL && label_max != NULL && label_value1 != NULL && label_value2 != NULL, RET_BAD_PARAMS);
+  return_value_if_fail(label_min != NULL && label_max != NULL && label_value1 != NULL && label_value2 != NULL, NULL);
 
   widget_set_name(dragger1, RANGE_SLIDER_SUB_WIDGET_DRAGGER1);
   widget_set_name(dragger2, RANGE_SLIDER_SUB_WIDGET_DRAGGER2);
@@ -974,7 +884,6 @@ widget_t* range_slider_create(widget_t* parent, xy_t x, xy_t y, wh_t w, wh_t h) 
 
   dragger1->auto_created = TRUE;
   dragger2->auto_created = TRUE;
-
   range_slider->dragger_style = "default";
   range_slider->range_label_style = "default";
   range_slider->value_label_style = "default";
@@ -983,6 +892,10 @@ widget_t* range_slider_create(widget_t* parent, xy_t x, xy_t y, wh_t w, wh_t h) 
   range_slider->value_label_width = 50;
   range_slider->value_label_height = 25;
   range_slider->value_label_gap = 0;
+  range_slider->range_slider_focusable = FALSE;
+
+  widget_on(dragger1, EVT_KEY_DOWN, on_dragger_key_down, range_slider);
+  widget_on(dragger2, EVT_KEY_DOWN, on_dragger_key_down, range_slider);
   return widget;
 }
 
