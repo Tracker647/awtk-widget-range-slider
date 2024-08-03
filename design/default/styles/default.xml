@@ -200,6 +200,12 @@
   <style name="ocean_no_border">
     <normal text_color="#527894"/>
   </style>
+  <style name="range_slider_default">
+    <normal border_color="#113554" text_color="#FFFFFF"/>
+  </style>
+  <style name="range_slider_default_no_border">
+    <normal text_color="#527894"/>
+  </style>
 </label>
 <line_number>
   <style name="default" text_align_h="center">
@@ -277,30 +283,27 @@
     <pressed/>
     <pressed_of_checked icon="radio_checked"/>
   </style>
+  <style name="button" bg_color="#F4F4F4" border_color="#338FFF" round_radius="4" text_color="#444444">
+    <normal border_color="#C2C2C2"/>
+    <disable bg_color="#F4F4F466" border_color="#C2C2C266" text_color="#44444466"/>
+    <focused/>
+    <over bg_color="#338FFF" text_color="#FFFFFF"/>
+    <pressed bg_color="#1971DD" border_color="#1971DD" text_color="#FFFFFF"/>
+  </style>
   <style name="no_dragger" bg_color="#00000000" border_color="#00000000" round_radius="4" text_color="#00000000">
     <normal/>
     <focused/>
     <focused_of_checked border_color="#00FFFF"/>
   </style>
-  <style name="ocean" bg_color="#00000000" bg_image="icons_slider_3" border_color="#00000000" round_radius="4" text_color="#00000000">
-    <normal bg_image="icons_slider_2" icon="" icon_at="auto"/>
+  <style name="range_slider_default" bg_color="#00000000" bg_image="range_slider_icon_3" round_radius="4" text_color="#00000000">
+    <normal bg_image="range_slider_icon_2" icon="" icon_at="auto"/>
     <disable_of_checked icon="" icon_at="auto"/>
-    <focused bg_image="icons_slider_2"/>
-    <focused_of_checked border_color="#00FFFF" icon="" icon_at="auto"/>
+    <focused bg_image="range_slider_icon_2"/>
+    <focused_of_checked icon="" icon_at="auto"/>
     <normal_of_checked icon="" icon_at="auto"/>
     <over_of_checked icon="" icon_at="auto"/>
     <pressed/>
     <pressed_of_checked icon="" icon_at="auto"/>
-  </style>
-  <style name="ocean_with_focus" bg_color="#00000000" bg_image="icons_slider_3" border_color="#00000000" round_radius="4" text_color="#00000000">
-    <normal bg_image="icons_slider_2" icon="" icon_at="auto"/>
-    <disable_of_checked icon="" icon_at="auto"/>
-    <focused bg_image="icons_slider_2" border_color="#00FFFF"/>
-    <focused_of_checked border_color="#00FFFF" icon="" icon_at="auto"/>
-    <normal_of_checked icon="" icon_at="auto"/>
-    <over_of_checked icon="" icon_at="auto"/>
-    <pressed/>
-    <pressed_of_checked border_color="#00FFFF" icon="" icon_at="auto"/>
   </style>
 </radio_button>
 <range_slider>
@@ -308,14 +311,9 @@
     <normal border_color="#E7E6E6"/>
     <pressed border_color="#0070C0"/>
   </style>
-  <style name="ocean" border_color="#00000000" fg_color="#4C728E" font_size="32" icon="icons_slider_2" selected_bg_color="#00C2FF" selected_fg_color="#4C728E" text_color="#000000">
-    <normal bg_color="#00C2FF"/>
-    <over bg_color="#00E1FF"/>
-  </style>
-  <style name="ocean_with_focused" border_color="#00000000" fg_color="#4C728E" font_size="32" icon="icons_slider_2" selected_bg_color="#00C2FF" selected_fg_color="#4C728E" text_color="#000000">
-    <normal bg_color="#00C2FF"/>
-    <focused border_color="#00FFFF"/>
-    <over bg_color="#00E1FF"/>
+  <style name="range_slider_default" bg_color="#00C2FF" fg_color="#4C728E" font_size="32" icon="range_slider_icon_2" selected_bg_color="#00C2FF" selected_fg_color="#4C728E" text_color="#000000">
+    <normal/>
+    <focused/>
   </style>
 </range_slider>
 <scroll_bar_d>

@@ -44,8 +44,17 @@ typedef enum {
  *
  * ```xml
  * <!-- ui -->
- *    <range_slider x="44" y="51" name="range_slider" value1="50" value2="150" min="1" max="300" w="468" h="24" step="1" bar_size="2" dragger_style="ocean" no_use_second_dragger="false" dragger_adapt_to_icon="true" dragger_size="0" style="ocean" focusable="true" value_label_visible="true" range_label_visible="true" value_label_style="ocean" range_label_style="ocean_no_border" sensitive="true">
-    </range_slider>
+ *         <range_slider x="82" y="230" name="range_slider" focusable="true" value1="20" value2="50" max="100" min="0" step="1" bar_size="2" dragger_style="range_slider_default" no_use_second_dragger="false" dragger_adapt_to_icon="true" dragger_size="0" style="range_slider_default" value_label_visible="true" range_label_visible="true" value_label_style="range_slider_default" range_label_style="range_slider_default_no_border" sensitive="true" w="591" h="46" range_slider_view_width_ratio="0.85" range_slider_view_height_ratio="0.5">
+    <property name="range_label_gap">
+      <![CDATA[5]]>
+    </property>
+    <property name="range_slider_focusable">
+      <![CDATA[false]]>
+    </property>
+    <property name="value_label_width">
+      <![CDATA[50]]>
+    </property>
+  </range_slider>
  * ```
  *
  * 可用通过style来设置控件的显示风格，如字体的大小和颜色等等。如：
@@ -53,10 +62,10 @@ typedef enum {
  * ```xml
  * <!-- style -->
  * <range_slider>
- *   <style name="default">
+ *   <style name="range_slider_default">
  *     <normal bg_color="#A5A5A5" fg_color="#338FFF" font_size="32" selected_bg_color="#A5A5A5" selected_fg_color="#00B0F0" text_color="#000000"/>
  *   </style>
-  * <style name="ocean" bg_color="#00C2FF" fg_color="#4C728E" font_size="32" icon="icons_slider_2" selected_bg_color="#00C2FF" selected_fg_color="#4C728E" text_color="#000000">
+  * <style name="range_slider_default" bg_color="#00C2FF" fg_color="#4C728E" font_size="32" icon="range_slider_icon_2" selected_bg_color="#00C2FF" selected_fg_color="#4C728E" text_color="#000000">
   *     <normal/>
   *     <focused/>
   *   </style>
@@ -67,10 +76,10 @@ typedef enum {
  *     <focused/>
  *     <focused_of_checked/>
  *   </style>
- *   <style name="ocean" bg_color="#00000000" bg_image="icons_slider_3" round_radius="4" text_color="#00000000">
- *     <normal bg_image="icons_slider_2" icon="" icon_at="auto"/>
+ *   <style name="range_slider_default" bg_color="#00000000" bg_image="range_slider_icon_3" round_radius="4" text_color="#00000000">
+ *     <normal bg_image="range_slider_icon_2" icon="" icon_at="auto"/>
  *     <disable_of_checked icon="" icon_at="auto"/>
- *     <focused bg_image="icons_slider_2" />
+ *     <focused bg_image="range_slider_icon_2" />
  *     <focused_of_checked  icon="" icon_at="auto"/>
  *     <normal_of_checked icon="" icon_at="auto"/>
  *     <over_of_checked icon="" icon_at="auto"/>
@@ -83,10 +92,10 @@ typedef enum {
       <normal text_color="#444444"/>
       <disable text_color="#44444466"/>
     </style>
-    <style name="ocean">
+    <style name="range_slider_default">
       <normal border_color="#113554" text_color="#FFFFFF"/>
     </style>
-    <style name="ocean_no_border">
+    <style name="range_slider_default_no_border">
       <normal text_color="#527894"/>
     </style>
   </label>
@@ -191,37 +200,43 @@ typedef struct _range_slider_t {
    * 是否在控件widget下方显示value1和value2的label，缺省为true
    */
   bool_t value_label_visible;
-  /**
-   * @property {uint32_t} range_label_width
-   * @annotation ["set_prop","get_prop","readable","persitent","design","scriptable"]
-   * 标识min和max的label的宽度，默认为50
-   */
-  uint32_t range_label_width;
 
-  /**
+   /**
    * @property {uint32_t} range_label_gap
    * @annotation ["set_prop","get_prop","readable","persitent","design","scriptable"]
    * 标识value1和value2的label与旁侧range_slider的间距，默认为10
    */
   uint32_t range_label_gap;
-  /**
-   * @property {uint32_t} value_label_width
-   * @annotation ["set_prop","get_prop","readable","persitent","design","scriptable"]
-   * 标识value1和value2的label的宽度，默认为50
-   */
-  uint32_t value_label_width;
-  /**
-   * @property {uint32_t} value_label_height
-   * @annotation ["set_prop","get_prop","readable","persitent","design","scriptable"]
-   * 标识value1和value2的label的高度，默认为25
-   */
-  uint32_t value_label_height;
+
   /**
    * @property {uint32_t} value_label_gap
    * @annotation ["set_prop","get_prop","readable","persitent","design","scriptable"]
    * 标识value1和value2的label与上方range_slider的间距，默认为0
    */
   uint32_t value_label_gap;
+
+   /**
+   * @property {uint32_t} value_label_width
+   * @annotation ["set_prop","get_prop","readable","persitent","design","scriptable"]
+   * 标识value1和value2的label宽度，默认为50
+   */
+  uint32_t value_label_width;
+
+  /**
+   * @property {double} range_slider_view_width_ratio
+   * @annotation ["set_prop","get_prop","readable","persitent","design","scriptable"]
+   * range_slider主view的高度占widget比重，间接控制min和max的label的宽度
+   */
+  double range_slider_view_width_ratio;
+
+  /**
+   * @property {double} range_slider_view_height_ratio
+   * @annotation ["set_prop","get_prop","readable","persitent","design","scriptable"]
+   * range_slider主view的高度占widget比重，间接控制min和max的label的高度
+   */
+  double range_slider_view_height_ratio;
+
+
   /**
    * @property {bool_t} range_slider_focusable
    * @annotation ["set_prop","get_prop","readable","persitent","design","scriptable"]
@@ -288,8 +303,10 @@ typedef struct _range_slider_t {
 #define RANGE_SLIDER_PROP_RANGE_LABEL_STYLE "range_label_style"
 #define RANGE_SLIDER_PROP_VALUE_LABEL_STYLE "value_label_style"
 #define RANGE_SLIDER_PROP_FOCUSABLE "range_slider_focusable"
+#define RANGE_SLIDER_PROP_VIEW_WIDTH_RATIO "range_slider_view_width_ratio"
+#define RANGE_SLIDER_PROP_VIEW_HEIGHT_RATIO "range_slider_view_height_ratio"
 
-
+#define RANGE_SLIDER_SUB_WIDGET_VIEW "range_slider_view"
 #define RANGE_SLIDER_SUB_WIDGET_DRAGGER1 "dragger1"
 #define RANGE_SLIDER_SUB_WIDGET_DRAGGER2 "dragger2"
 #define RANGE_SLIDER_SUB_WIDGET_LABEL_MIN "label_min"
@@ -297,13 +314,11 @@ typedef struct _range_slider_t {
 #define RANGE_SLIDER_SUB_WIDGET_LABEL_VALUE1 "label_value1"
 #define RANGE_SLIDER_SUB_WIDGET_LABEL_VALUE2 "label_value2"
 
-#define RANGE_SLIDER_SUB_WIDGET_RANGE_LABEL_WIDTH "range_label_width"
-#define RANGE_SLIDER_SUB_WIDGET_RANGE_LABEL_GAP "range_label_gap"
-#define RANGE_SLIDER_SUB_WIDGET_VALUE_LABEL_WIDTH "value_label_width"
-#define RANGE_SLIDER_SUB_WIDGET_VALUE_LABEL_HEIGHT "value_label_height"
-#define RANGE_SLIDER_SUB_WIDGET_VALUE_LABEL_GAP "value_label_gap"
 
-#define RANGE_SLIDER_SUB_WIDGET_VALUE_LABEL_WIDTH_ 50
+#define RANGE_SLIDER_SUB_WIDGET_RANGE_LABEL_GAP "range_label_gap"
+#define RANGE_SLIDER_SUB_WIDGET_VALUE_LABEL_GAP "value_label_gap"
+#define RANGE_SLIDER_SUB_WIDGET_VALUE_LABEL_WIDTH "value_label_width"
+
 
 /**
  * @method range_slider_create

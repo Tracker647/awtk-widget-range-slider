@@ -7,8 +7,18 @@ dragger的style显示及独立于母widget√
 dragger使用icon时size自适应√
 事件回调（will_change,changing,changed）√
 可选只用一个滑块 √
-键盘控制 √ -->如何与awtk自带的按键焦点切换功能相调和？
+键盘控制 √ -->如何与awtk自带的按键焦点切换功能相调和？--> 另外做一套focus逻辑用于awtk √
 区间label显示，值label实时渲染 √
+不同窗口大小的适配 √
 
 支线：
 底层bar圆角 √
+
+踩坑记录：
+不能在基widget外部绘制widget,awtk绘制只更新widget内部画布，widget外部会被附近widget的刷新覆盖掉
+自定义控件xml的属性超过24个必须用property标签语法赋值，如:
+    <property name="value_label_width">
+      <![CDATA[50]]>
+    </property>
+否则无法加载，表现为designer正常显示，预览和运行不显示
+滑动条填充矩形的画布坐标系被定死在母widget了，所有坐标都得偏移一下才能用，暂时找不到转换成range_slider_view内部坐标的方法

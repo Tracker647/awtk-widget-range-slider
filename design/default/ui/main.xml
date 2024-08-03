@@ -1,14 +1,26 @@
-<window name="button_test" style:normal:bg_color="#1E3864" move_focus_up_key="up" move_focus_down_key="down" move_focus_left_key="left" move_focus_right_key="right" move_focus_as_tree_enable="true" move_focus_children_key="RETURN" move_focus_parent_key="ESCAPE">
-  <view name="setting_container" x="50" y="111" w="610" h="278" style:normal:bg_color="#002444" style:normal:round_radius="5" style:focused:border_color="#4ADDD5" style:focused:round_radius="5" children_layout="default(c=1,r=3)">
-    <view name="view" style:focused:border_color="#00FFFF" focusable="true"/>
-    <view name="view" children_layout="default(c=3,r=1)" style:focused:border_color="#00FFFF" focusable="true">
-      <radio_button focused="true" name="radio_button" style:focused:border_color="#00FFFF" style:focused_of_checked:border_color="#00FFFF" focusable="true" text="RadioButton"/>
-      <radio_button name="radio_button" style:focused:border_color="#00FFFF" style:focused_of_checked:border_color="#00FFFF" focusable="true" text="RadioButton"/>
-      <radio_button name="radio_button" style:focused:border_color="#00FFFF" style:focused_of_checked:border_color="#00FFFF" focusable="true" text="RadioButton"/>
-    </view>
-    <view name="view" style:focused:border_color="#00FFFF" focusable="true">
-      <slider name="slider" x="45" y="10" w="495" h="16" focusable="true" style:focused:border_color="#00FFFF" value="40"/>
-      <range_slider name="range_slider" focusable="true" value2="150" value1="50" max="300" min="1"  step="1" bar_size="2" dragger_style="ocean" no_use_second_dragger="false" dragger_adapt_to_icon="true" dragger_size="0" style="ocean"  value_label_visible="true" range_label_visible="true" value_label_style="ocean" range_label_style="ocean_no_border" sensitive="true" style:focused:border_color="#00FFFF" disg:custom="container" x="45" y="36" w="509" h="26"/>
-    </view>
-  </view>
+<window name="main" style:normal:bg_color="#1E3864" move_focus_up_key="up" move_focus_down_key="down" move_focus_left_key="left" move_focus_right_key="right" move_focus_as_tree_enable="true" move_focus_children_key="RETURN" move_focus_parent_key="ESCAPE">
+  <button name="button" x="222" y="153" w="100" h="36" text="Button"/>
+  <slider name="slider" x="182" y="301" w="214" h="16" value="40"/>
+  <range_slider x="82" y="230" name="range_slider" focusable="true" value1="20" value2="50" max="100" min="0" step="1" bar_size="2" dragger_style="range_slider_default" no_use_second_dragger="false" dragger_adapt_to_icon="true" dragger_size="0" style="range_slider_default" value_label_visible="true" range_label_visible="true" value_label_style="range_slider_default" range_label_style="range_slider_default_no_border" sensitive="true" w="591" h="46" range_slider_view_width_ratio="0.85" range_slider_view_height_ratio="0.5">
+    <property name="range_label_gap">
+      <![CDATA[5]]>
+    </property>
+    <property name="range_slider_focusable">
+      <![CDATA[false]]>
+    </property>
+    <property name="value_label_width">
+      <![CDATA[50]]>
+    </property>
+  </range_slider>
+  <range_slider x="82" y="352" name="range_slider" focusable="true" value1="20" value2="50" max="100" min="0" step="1" bar_size="2" dragger_style="range_slider_default" no_use_second_dragger="false" dragger_adapt_to_icon="true" dragger_size="0" style="range_slider_default" value_label_visible="true" range_label_visible="true" value_label_style="range_slider_default" range_label_style="range_slider_default_no_border" sensitive="true" w="591" h="46" range_slider_view_width_ratio="0.85" range_slider_view_height_ratio="0.5">
+    <property name="range_label_gap">
+      <![CDATA[5]]>
+    </property>
+    <property name="range_slider_focusable">
+      <![CDATA[false]]>
+    </property>
+    <property name="value_label_width">
+      <![CDATA[50]]>
+    </property>
+  </range_slider>
 </window>
