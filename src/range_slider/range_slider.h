@@ -27,14 +27,6 @@
 #include "widgets/dragger.h"
 
 BEGIN_C_DECLS
-typedef enum {
-  kRangeSilderFocus_view = 0,
-  kRangeSilderFocus_dragger1,
-  kRangeSilderFocus_dragger2,
-  kRangeSilderWillMove_dragger1,
-  kRangeSilderWillMove_dragger2
-} enFocusState;
-
 /**
  * @class range_slider_t
  * @parent widget_t
@@ -44,7 +36,7 @@ typedef enum {
  *
  * ```xml
  * <!-- ui -->
- *         <range_slider x="82" y="230" name="range_slider" focusable="true" value1="20" value2="50" max="100" min="0" step="1" bar_size="2" dragger_style="range_slider_default" no_use_second_dragger="false" dragger_adapt_to_icon="true" dragger_size="0" style="range_slider_default" value_label_visible="true" range_label_visible="true" value_label_style="range_slider_default" range_label_style="range_slider_default_no_border" sensitive="true" w="591" h="46" range_slider_view_width_ratio="0.85" range_slider_view_height_ratio="0.5">
+ *         <range_slider x="82" y="230" name="range_slider" value1="20" value2="50" max="100" min="0" step="1" bar_size="2" dragger_style="range_slider_default" no_use_second_dragger="false" dragger_adapt_to_icon="true" dragger_size="0" style="range_slider_default" value_label_visible="true" range_label_visible="true" value_label_style="range_slider_default" range_label_style="range_slider_default_no_border" sensitive="true" w="591" h="46" range_slider_view_width_ratio="0.85" range_slider_view_height_ratio="0.5">
     <property name="range_label_gap">
       <![CDATA[5]]>
     </property>
@@ -77,15 +69,15 @@ typedef enum {
  *     <focused_of_checked/>
  *   </style>
  *   <style name="range_slider_default" bg_color="#00000000" bg_image="range_slider_icon_3" round_radius="4" text_color="#00000000">
- *     <normal bg_image="range_slider_icon_2" icon="" icon_at="auto"/>
- *     <disable_of_checked icon="" icon_at="auto"/>
- *     <focused bg_image="range_slider_icon_2" />
- *     <focused_of_checked  icon="" icon_at="auto"/>
- *     <normal_of_checked icon="" icon_at="auto"/>
- *     <over_of_checked icon="" icon_at="auto"/>
- *     <pressed/>
- *     <pressed_of_checked icon="" icon_at="auto"/>
- *   </style>
+      <normal bg_image="range_slider_icon_2" icon="" icon_at="auto"/>
+      <disable_of_checked icon="" icon_at="auto"/>
+      <focused bg_image="range_slider_icon_2" border_color="#00FFFF"/>
+      <focused_of_checked border_color="#00FFFF" icon="" icon_at="auto"/>
+      <normal_of_checked icon="" icon_at="auto"/>
+      <over_of_checked icon="" icon_at="auto"/>
+      <pressed/>
+      <pressed_of_checked icon="" icon_at="auto"/>
+    </style>
  * </radio_button>
  * <label>
     <style name="default">
@@ -245,8 +237,6 @@ typedef struct _range_slider_t {
   bool_t range_slider_focusable;
 
   /* private */
-  enFocusState prev_key_state; 
-  enFocusState curr_key_state; /* 键盘控制模式下的状态 */ 
   bool_t no_dragger_icon;
   bool_t dragger1_dragging;
   bool_t dragger2_dragging;

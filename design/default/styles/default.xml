@@ -298,8 +298,8 @@
   <style name="range_slider_default" bg_color="#00000000" bg_image="range_slider_icon_3" round_radius="4" text_color="#00000000">
     <normal bg_image="range_slider_icon_2" icon="" icon_at="auto"/>
     <disable_of_checked icon="" icon_at="auto"/>
-    <focused bg_image="range_slider_icon_2"/>
-    <focused_of_checked icon="" icon_at="auto"/>
+    <focused bg_image="range_slider_icon_2" border_color="#00FFFF"/>
+    <focused_of_checked border_color="#00FFFF" icon="" icon_at="auto"/>
     <normal_of_checked icon="" icon_at="auto"/>
     <over_of_checked icon="" icon_at="auto"/>
     <pressed/>

@@ -379,7 +379,6 @@ static ret_t range_slider_set_focusable(widget_t* widget, bool_t focusable)
   widget_t *dragger1 = widget_lookup(widget, RANGE_SLIDER_SUB_WIDGET_DRAGGER1, TRUE);
   widget_t *dragger2 = widget_lookup(widget, RANGE_SLIDER_SUB_WIDGET_DRAGGER2, TRUE);
   return_value_if_fail(dragger1 != NULL && dragger2 != NULL, RET_BAD_PARAMS);
-  widget_set_focusable(widget, focusable);
   widget_set_focusable(dragger1, focusable);
   widget_set_focusable(dragger2, focusable);
   return RET_OK;
@@ -763,9 +762,7 @@ static ret_t range_slider_on_event(widget_t* widget, event_t* e) {
   widget_t *dragger1 = widget_lookup(widget, RANGE_SLIDER_SUB_WIDGET_DRAGGER1, TRUE); 
   widget_t *dragger2 = widget_lookup(widget, RANGE_SLIDER_SUB_WIDGET_DRAGGER2, TRUE); 
   widget_t *range_slider_view = widget_lookup(widget, RANGE_SLIDER_SUB_WIDGET_VIEW, TRUE);
-  return_value_if_fail(range_slider_view != NULL, RET_BAD_PARAMS);
-
-  if(!(dragger1 != NULL && dragger2 != NULL)){
+  if(!(dragger1 != NULL && dragger2 != NULL && range_slider_view != NULL)){
     /* 子控件还未初始化完毕，先返回 */
     return RET_BAD_PARAMS;
   }
@@ -777,17 +774,16 @@ static ret_t range_slider_on_event(widget_t* widget, event_t* e) {
     case EVT_POINTER_DOWN: {
       rect_t *dr1 = (rect_t*)dragger1, *dr2 = (rect_t*)dragger2;
       widget_to_local(range_slider_view, &p);
-      printf("point at(%d %d), dr1(%d %d)\r\n", p.x, p.y, dr1->x, dr1->y);
       if (rect_contains(dr1, p.x, p.y)) {
         range_slider_dispatch_value_change_event(widget, EVT_VALUE1_WILL_CHANGE, kDragger1, 0);
         range_slider->dragger1_dragging = TRUE;
         range_slider->dragger2_dragging = FALSE;
-        widget_grab(widget, dragger1);
+        widget_grab(range_slider_view, dragger1);
       } else if (rect_contains(dr2, p.x, p.y)) {
         range_slider_dispatch_value_change_event(widget, EVT_VALUE2_WILL_CHANGE, kDragger2, 0);
         range_slider->dragger2_dragging = TRUE;
         range_slider->dragger1_dragging = FALSE;
-        widget_grab(widget, dragger2);
+        widget_grab(range_slider_view, dragger2);
       }
       break;
     }
@@ -805,18 +801,18 @@ static ret_t range_slider_on_event(widget_t* widget, event_t* e) {
         range_slider->dragger1_dragging = FALSE;
         range_slider_change_value_by_pointer_event(widget, evt, kDragger1);
         range_slider_dispatch_value_change_event(widget, EVT_VALUE1_CHANGED, kDragger1, 0);
-        widget_ungrab(widget, dragger1);
+        widget_ungrab(range_slider_view, dragger1);
       } else if (range_slider->dragger2_dragging) {
         range_slider->dragger2_dragging = FALSE;
         range_slider_change_value_by_pointer_event(widget, evt, kDragger2);
         range_slider_dispatch_value_change_event(widget, EVT_VALUE2_CHANGED, kDragger2, 0);
-        widget_ungrab(widget, dragger2);
+        widget_ungrab(range_slider_view, dragger2);
       }
-      widget_set_prop_bool(dragger1, "value", FALSE);
-      widget_set_prop_bool(dragger2, "value", FALSE);
       break;
     }
-    case EVT_POINTER_DOWN_ABORT:
+    case EVT_POINTER_LEAVE:
+      widget_set_prop_bool(dragger1, "value", FALSE);
+      widget_set_prop_bool(dragger2, "value", FALSE);
       break;
     case EVT_KEY_DOWN: 
       key_event_t *evt = (key_event_t*)e;
