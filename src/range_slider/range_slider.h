@@ -36,17 +36,7 @@ BEGIN_C_DECLS
  *
  * ```xml
  * <!-- ui -->
- *         <range_slider x="82" y="230" name="range_slider" value1="20" value2="50" max="100" min="0" step="1" bar_size="2" dragger_style="range_slider_default" no_use_second_dragger="false" dragger_adapt_to_icon="true" dragger_size="0" style="range_slider_default" value_label_visible="true" range_label_visible="true" value_label_style="range_slider_default" range_label_style="range_slider_default_no_border" sensitive="true" w="591" h="46" range_slider_view_width_ratio="0.85" range_slider_view_height_ratio="0.5">
-    <property name="range_label_gap">
-      <![CDATA[5]]>
-    </property>
-    <property name="range_slider_focusable">
-      <![CDATA[false]]>
-    </property>
-    <property name="value_label_width">
-      <![CDATA[50]]>
-    </property>
-  </range_slider>
+ *   <range_slider name="range_slider" value1="20" value2="50" max="100" step="1" bar_size="2" dragger_style="range_slider_default" style="range_slider_default" value_label_visible="true" range_label_visible="true" value_label_style="range_slider_default" range_label_style="range_slider_default_no_border" w="591" h="47" range_slider_view_width_ratio="0.85" range_slider_view_height_ratio="0.5" dragger_adapt_to_icon="true" value_label_width="50" range_label_gap="5" value_min_show_one_point="false"/>
  * ```
  *
  * 可用通过style来设置控件的显示风格，如字体的大小和颜色等等。如：
@@ -235,6 +225,13 @@ typedef struct _range_slider_t {
    * 是否允许控件range_slider获得焦点，由于某些原因widget的focusable无法得到预想的效果，因此focusable应以这个为准，缺省为false
    */
   bool_t range_slider_focusable;
+  
+  /**
+   * @property {bool_t} value_min_show_one_point
+   * @annotation ["set_prop","get_prop","readable","persitent","design","scriptable"]
+   * value_min值显示一位小数点, 默认为false
+   */
+  bool_t value_min_show_one_point;
 
   /* private */
   bool_t no_dragger_icon;
@@ -295,6 +292,7 @@ typedef struct _range_slider_t {
 #define RANGE_SLIDER_PROP_FOCUSABLE "range_slider_focusable"
 #define RANGE_SLIDER_PROP_VIEW_WIDTH_RATIO "range_slider_view_width_ratio"
 #define RANGE_SLIDER_PROP_VIEW_HEIGHT_RATIO "range_slider_view_height_ratio"
+#define RANGE_SLIDER_PROP_VALUE_MIN_SHOW_ONE_POINT "value_min_show_one_point"
 
 #define RANGE_SLIDER_SUB_WIDGET_VIEW "range_slider_view"
 #define RANGE_SLIDER_SUB_WIDGET_DRAGGER1 "dragger1"

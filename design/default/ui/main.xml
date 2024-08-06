@@ -1,11 +1,14 @@
-<window name="main" style:normal:bg_color="#1E3864" move_focus_up_key="up" move_focus_down_key="down" move_focus_left_key="left" move_focus_right_key="right" move_focus_as_tree_enable="true" move_focus_children_key="RETURN" move_focus_parent_key="ESCAPE">
-  <slider name="slider" x="182" y="301" w="214" h="16" focusable="true" value="40"/>
-  <range_slider x="126" y="211" name="range_slider" value1="20" value2="50" max="100" min="0" step="1" bar_size="2" dragger_style="range_slider_default" no_use_second_dragger="false" dragger_adapt_to_icon="true" dragger_size="0" style="range_slider_default" value_label_visible="true" range_label_visible="true" value_label_style="range_slider_default" range_label_style="range_slider_default_no_border" sensitive="true" w="591" h="46" range_slider_view_width_ratio="0.85" range_slider_view_height_ratio="0.5" range_label_gap="5">
+<window name="main" style:normal:bg_color="#1E3864" move_focus_up_key="up" move_focus_down_key="down" move_focus_left_key="left" move_focus_right_key="right">
+  <slider name="slider" x="155" y="101" w="214" h="16" focused="true" focusable="true" value="40"/>
+  <range_slider name="range_slider" value1="20" value2="50" max="100" step="1" bar_size="2" dragger_style="range_slider_default" style="range_slider_default" value_label_visible="true" range_label_visible="true" value_label_style="range_slider_default" range_label_style="range_slider_default_no_border" w="591" h="47" range_slider_view_width_ratio="0.85" range_slider_view_height_ratio="0.5" dragger_adapt_to_icon="true" value_label_width="50" range_label_gap="5" value_min_show_float_point_when_zero="false" x="128" y="196" value_min_show_one_point="true" min="0">
     <property name="range_slider_focusable">
       <![CDATA[true]]>
     </property>
-    <property name="value_label_width">
-      <![CDATA[50]]>
+  </range_slider>
+  <range_slider x="128" y="253" name="range_slider" value1="20" value2="50" max="100" step="1" bar_size="2" dragger_style="range_slider_default" style="range_slider_default" value_label_visible="true" range_label_visible="true" value_label_style="range_slider_default" range_label_style="range_slider_default_no_border" w="591" h="47" range_slider_view_width_ratio="0.85" range_slider_view_height_ratio="0.5" dragger_adapt_to_icon="true" value_label_width="50" range_label_gap="5" value_min_show_one_point="false">
+    <property name="range_slider_focusable">
+      <![CDATA[true]]>
     </property>
+  </range_slider>
   </range_slider>
 </window>
