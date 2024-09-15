@@ -1,6 +1,7 @@
 # awtk-widget-range_slider
 
-range_slider 控件。
+range_slider 控件是一个有两个滑块的滑条控件，可用于区间的定义。
+该控件可用键盘控制滑块切换，enter选中后控制滑块滑动，esc退出控制回到滑块切换。
 
 ![](docs/images/ui.jpg)
 
@@ -55,7 +56,7 @@ scons LINUX_FB=true
 
 3. 运行
 
-```
+![GIF 2024-9-15 15-30-28](https://github.com/user-attachments/assets/214900e9-fe1d-46d4-a3a4-f49d7b0e0197)
 ./bin/demo
 ```
 
